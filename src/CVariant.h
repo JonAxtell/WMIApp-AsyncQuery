@@ -1,8 +1,11 @@
 #pragma once
 
+#include "pch.h"
 #include <oaidl.h>
 #include <cstdio>
+#include <string>
 #include <vector>
+#include <stdint.h>
 
 //#################################################################################################################################
 //

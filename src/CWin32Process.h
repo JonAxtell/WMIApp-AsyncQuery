@@ -1,5 +1,6 @@
 #pragma once
 
+#include "pch.h"
 #include "CWBEMObjectSink.h"
 #include "CWBEMObjectQuery.h"
 #include "CWBEMObject.h"
@@ -12,7 +13,7 @@
 class CWin32ProcessObject : public CWBEMObject
 {
 public:
-    static const std::string ObjectName;
+    static const char* ObjectName;
 
     enum propertyEnum
     {
@@ -65,10 +66,12 @@ public:
 
     CWin32ProcessObject() {}
     CWin32ProcessObject(const CWin32ProcessObject&) = default;
+    CWin32ProcessObject(CWin32ProcessObject&&) = default;
     ~CWin32ProcessObject() {}
     CWin32ProcessObject& operator=(const CWin32ProcessObject&) = default;
+    CWin32ProcessObject& operator=(CWin32ProcessObject&&) = default;
 
-    std::shared_ptr<CVariant>  Property(int prop) { return Properties().at(prop); }
+    const char* PropertyName(int prop) { return propertyNames[prop]; }
 
     std::wstring Description() { return (*Properties().at(PROP_Description)).FromBSTR(); }
     uint16_t ExecutionState() { return (*Properties().at(PROP_ExecutionState)).FromI4(); }
@@ -77,5 +80,5 @@ public:
     uint16_t ProcessId() { return (*Properties().at(PROP_ProcessId)).FromI4(); }
 
 public:
-    static const std::vector<std::string> propertyNames;
+    static const char* propertyNames[];
 };

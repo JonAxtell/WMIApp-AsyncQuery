@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "CWin32PrintJob.h"
 
-const std::string CWin32PrintJobObject::ObjectName("Win32_PrintJob");
+const char* CWin32PrintJobObject::ObjectName = "Win32_PrintJob";
 
-const std::vector<std::string> CWin32PrintJobObject::propertyNames =
+const char* CWin32PrintJobObject::propertyNames[] =
 {
     "Caption",
     "Description",
@@ -32,5 +32,6 @@ const std::vector<std::string> CWin32PrintJobObject::propertyNames =
     "PrintProcessor",
     "Size",
     "StatusMask",
-    "TotalPages", 
+    "TotalPages",
+    NULL
 };

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "pch.h"
 #include "CWBEMObjectSink.h"
 #include "CWBEMObjectQuery.h"
 #include "CWBEMObject.h"
@@ -12,7 +13,7 @@
 class CWin32PrintJobObject : public CWBEMObject
 {
 public:
-    static const std::string ObjectName;
+    static const char* ObjectName;
 
     enum propertyEnum
     {
@@ -48,13 +49,15 @@ public:
 
     CWin32PrintJobObject() {}
     CWin32PrintJobObject(const CWin32PrintJobObject&) = default;
+    CWin32PrintJobObject(CWin32PrintJobObject&&) = default;
     ~CWin32PrintJobObject() {}
     CWin32PrintJobObject& operator=(const CWin32PrintJobObject&) = default;
+    CWin32PrintJobObject& operator=(CWin32PrintJobObject&&) = default;
 
-    std::shared_ptr<CVariant>  Property(int prop) { return Properties().at(prop); }
+    const char* PropertyName(int prop) { return propertyNames[prop]; }
 
     std::wstring Description() { return (*Properties().at(PROP_Description)).FromBSTR(); }
 
 public:
-    static const std::vector<std::string> propertyNames;
+    static const char* propertyNames[];
 };

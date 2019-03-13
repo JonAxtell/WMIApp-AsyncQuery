@@ -1,10 +1,11 @@
 #pragma once
 
+#include "pch.h"
 #include "CWBEMObjectSink.h"
 #include "CWBEMObjectQuery.h"
 #include "CWBEMObject.h"
 #include "CVariant.h"
-#include <iostream>
+#include <ostream>
 #include <string>
 #include <vector>
 #include <array>
@@ -16,7 +17,7 @@
 class CWin32ProcessorObject : public CWBEMObject
 {
 public:
-    static const std::string ObjectName;
+    static const char* ObjectName;
 
     class CArchitecture
     {
@@ -37,8 +38,10 @@ public:
         CArchitecture(uint32_t arch) : _arch(arch) {}
         ~CArchitecture() {}
 
-        std::wstring Text() { return _architectureValues.at(_arch); }
-        uint32_t Value() { return _arch; }
+        friend std::wostream& operator<<(std::wostream& os, const CArchitecture& v);
+
+        const std::string Text() const { return std::string(_architectureValues[_arch]); }
+        uint32_t Value() const { return _arch; }
 
     private:
         uint32_t _arch;
@@ -74,8 +77,10 @@ public:
         CAvailability(uint32_t avail) : _avail(avail) {}
         ~CAvailability() {}
 
-        std::wstring Text() { return _availabilityValues.at(_avail); }
-        uint32_t Value() { return _avail; }
+        friend std::wostream& operator<<(std::wostream& os, const CAvailability& v);
+
+        const std::string Text() const { return std::string(_availabilityValues[_avail]); }
+        uint32_t Value() const { return _avail; }
 
     private:
         uint32_t _avail;
@@ -98,8 +103,10 @@ public:
         CCpuStatus(uint32_t avail) : _status(avail) {}
         ~CCpuStatus() {}
 
-        std::wstring Text() { return _cpuStatusValues.at(_status); }
-        uint32_t Value() { return _status; }
+        friend std::wostream& operator<<(std::wostream& os, const CCpuStatus& v);
+
+        const std::string Text() const { return std::string(_cpuStatusValues[_status]); }
+        uint32_t Value() const { return _status; }
 
     private:
         uint32_t _status;
@@ -109,13 +116,21 @@ public:
     {
     public:
         CCpuVoltage(uint32_t voltage, uint32_t caps) : _voltage(voltage), _caps(caps) {}
+        CCpuVoltage(const CCpuVoltage&) = default;
+        CCpuVoltage(CCpuVoltage&&) = default;
         ~CCpuVoltage() {}
+        CCpuVoltage& operator=(const CCpuVoltage&) = default;
+        CCpuVoltage& operator=(CCpuVoltage&&) = default;
 
-        std::wstring Text() { return std::to_wstring(Volts()); }
-        double Value() { return Volts(); }
+        friend std::wostream& operator<<(std::wostream& os, const CCpuVoltage& v);
+
+        const std::string Text() const { return std::to_string(Volts()); }
+        double Value() const { return Volts(); }
 
     private:
-        double Volts()
+        CCpuVoltage() = delete;
+
+        double Volts() const
         {
             if (_voltage & 0x80)
             {
@@ -149,7 +164,9 @@ public:
         CCpuFrequency(uint32_t clock) : _clock(clock) {}
         ~CCpuFrequency() {}
 
-        std::string Text()
+        friend std::wostream& operator<<(std::wostream& os, const CCpuFrequency& f);
+
+        const std::string Text() const
         {
             char dec[32];
             char frac[32];
@@ -168,7 +185,7 @@ public:
             }
             return std::string(dec) + "." + std::string(frac) + std::string(freq);
         }
-        double Value() { return static_cast<double>(_clock); }
+        double Value() const { return static_cast<double>(_clock); }
 
     private:
         uint32_t _clock;
@@ -180,8 +197,10 @@ public:
         CCpuFamily(uint32_t family) : _family(family) {}
         ~CCpuFamily() {}
 
-        std::wstring Text() { return _cpuFamilyValues.at(_family); }
-        uint32_t Value() { return _family; }
+        friend std::wostream& operator<<(std::wostream& os, const CCpuFamily& f);
+
+        const std::string Text() const { return std::string(_cpuFamilyValues.at(_family)); }
+        uint32_t Value() const { return _family; }
 
     private:
         uint32_t _family;
@@ -250,10 +269,12 @@ public:
 
     CWin32ProcessorObject() {}
     CWin32ProcessorObject(const CWin32ProcessorObject&) = default;
+    CWin32ProcessorObject(CWin32ProcessorObject&&) = default;
     ~CWin32ProcessorObject() {}
     CWin32ProcessorObject& operator=(const CWin32ProcessorObject&) = default;
+    CWin32ProcessorObject& operator=(CWin32ProcessorObject&&) = default;
 
-    std::shared_ptr<CVariant> Property(int prop) { return Properties().at(prop); }
+    const char* PropertyName(int prop) { return propertyNames[prop]; }
 
     CArchitecture Architecture() { return (*Properties().at(PROP_Architecture)).FromI4(); }
     CAvailability Availability() { return (*Properties().at(PROP_Availability)).FromI4(); }
@@ -270,11 +291,11 @@ public:
     CCpuFamily CpuFamily() { return CCpuFamily((*Properties().at(PROP_Family)).FromI4()); }
 
 public:
-    static const std::vector<std::string> propertyNames;
+    static const char* propertyNames[];
 
 private:
-    static const std::vector<std::wstring> _architectureValues;
-    static const std::vector<std::wstring> _availabilityValues;
-    static const std::vector<std::wstring> _cpuStatusValues;
-    static const std::map<int, std::wstring> _cpuFamilyValues;
+    static const char* _architectureValues[];
+    static const char* _availabilityValues[];
+    static const char* _cpuStatusValues[];
+    static const std::map<int, const char*> _cpuFamilyValues;
 };

@@ -42,8 +42,9 @@ bool WMIQuery(::IWbemServices *pSvc, std::vector<COBJECT *>& obj, std::string cl
             return false;
         }
 
-        //std::wcout << L"Object " << query->WMIClassName().c_str() << L" populated with " << query->Sink()->Count() << L" items" << std::endl;
+        std::wcout << L"Object " << query->WMIClassName().c_str() << L" populated with " << query->Sink()->Count() << L" items" << std::endl;
 
+        // Transfer the objects out of the sink before the sink loses focus
         obj = *reinterpret_cast<std::vector<COBJECT *> *>(&query->Sink()->Objects());
         delete query;
         return true;
@@ -136,7 +137,9 @@ public:
     void ConnectServer()
     {
         // Use WBEM_FLAG_CONNECT_USE_MAX_WAIT to limit wait to 2 minutes or less
-        HRESULT hres = _pLoc->ConnectServer(bstr_t(_networkResource.c_str()),   // Network resource
+        BSTR netres;
+        netres = ConvertStringToBSTR(_networkResource.c_str());
+        HRESULT hres = _pLoc->ConnectServer(netres,                             // Network resource
                                             NULL,                               // User
                                             NULL,                               // Password
                                             0,                                  // Locale
@@ -148,6 +151,7 @@ public:
         {
             throw std::runtime_error(std::string("CWBEM::ConnectServer Could not connect to ") + _networkResource + std::string(". Error code = 0x") + NumberToHex(hres));
         }
+        ::SysFreeString(netres);
 
         std::wcout << L"Connected to " << _networkResource.c_str() << L" WMI namespace" << std::endl;
 
@@ -246,165 +250,185 @@ void heapdump(void)
 }
 #endif
 
+void ListWBEMObjects()
+{
+    CCOM com(COINIT_MULTITHREADED);
+    CWBEM wbem("ROOT\\CIMV2");
+    wbem.ConnectServer();
+
+    //.............................................................................................................................
+    // Processors
+    //
+    TWBEMObjects<CWin32ProcessorObject> processors;
+    if (WMIQuery<CWin32ProcessorObject>(wbem.Service(), processors.Objects(), CWin32ProcessorObject::ObjectName))
+    {
+        for (auto &p : processors.Objects())
+        {
+            std::wcout << &p - &processors.Objects()[0] << L" " << L"Processor is " << p->Architecture() << L"," << p->Availability() << L"," << p->CpuStatus() << L"," << p->Description() << L"," << p->Voltage() << L"," << p->Frequency() << L"," << p->CpuFamily() << L"," << p->SocketDesignation() << std::endl;
+        }
+    }
+
+    //.............................................................................................................................
+    // BIOS
+    //
+    TWBEMObjects<CWin32BIOSObject> bios;
+    if (WMIQuery<CWin32BIOSObject>(wbem.Service(), bios.Objects(), CWin32BIOSObject::ObjectName))
+    {
+        for (auto &b : bios.Objects())
+        {
+            std::wcout << &b - &bios.Objects()[0] << L" " << b->Description() << std::endl;
+        }
+    }
+
+    //.............................................................................................................................
+    // Operating System
+    //
+    TWBEMObjects<CWin32OperatingSystemObject> os;
+    if (WMIQuery<CWin32OperatingSystemObject>(wbem.Service(), os.Objects(), CWin32OperatingSystemObject::ObjectName))
+    {
+        for (auto &o : os.Objects())
+        {
+            std::wcout << &o - &os.Objects()[0] << L" " << o->Caption() << std::endl;
+        }
+    }
+
+    //.............................................................................................................................
+    // Printers
+    //
+    TWBEMObjects<CWin32PrinterObject> printers;
+    if (WMIQuery<CWin32PrinterObject>(wbem.Service(), printers.Objects(), CWin32PrinterObject::ObjectName))
+    {
+        for (auto &p : printers.Objects())
+        {
+            std::wcout << &p - &printers.Objects()[0] << L" " << p->Caption() << std::endl;
+        }
+    }
+
+    //.............................................................................................................................
+    // Printer configurations
+    //
+    TWBEMObjects<CWin32PrinterConfigurationObject> printerConfigurations;
+    if (WMIQuery<CWin32PrinterConfigurationObject>(wbem.Service(), printerConfigurations.Objects(), CWin32PrinterConfigurationObject::ObjectName))
+    {
+        for (auto &p : printerConfigurations.Objects())
+        {
+            std::wcout << &p - &printerConfigurations.Objects()[0] << L" " << p->Description() << std::endl;
+        }
+    }
+
+    //.............................................................................................................................
+    // Printer drivers
+    //
+    TWBEMObjects<CWin32PrinterDriverObject> printerDrivers;
+    if (WMIQuery<CWin32PrinterDriverObject>(wbem.Service(), printerDrivers.Objects(), CWin32PrinterDriverObject::ObjectName))
+    {
+        for (auto &p : printerDrivers.Objects())
+        {
+            std::wcout << &p - &printerDrivers.Objects()[0] << L" " << p->Name() << std::endl;
+        }
+    }
+
+    //.............................................................................................................................
+    // Print job
+    //
+    TWBEMObjects<CWin32PrintJobObject> printJobs;
+    if (WMIQuery<CWin32PrintJobObject>(wbem.Service(), printJobs.Objects(), CWin32PrintJobObject::ObjectName))
+    {
+        for (auto &p : printJobs.Objects())
+        {
+            std::wcout << &p - &printJobs.Objects()[0] << L" " << p->Description() << std::endl;
+        }
+    }
+
+#if 1
+    //.............................................................................................................................
+    // Processes
+    //
+    TWBEMObjects<CWin32ProcessObject> processes;
+    if (WMIQuery<CWin32ProcessObject>(wbem.Service(), processes.Objects(), CWin32ProcessObject::ObjectName))
+    {
+        for (auto &p : processes.Objects())
+        {
+            std::wcout << &p - &processes.Objects()[0] << L" " << p->ProcessId() << L" " << p->Name() << L" " << p->HandleCount() << std::endl;
+        }
+    }
+#endif
+
+#if 0
+    //.............................................................................................................................
+    // Software Licensing Product
+    //
+    TWBEMObjects<CWin32SoftwareLicensingProductObject> products;
+    if (WMIQuery<CWin32SoftwareLicensingProductObject>(wbem.Service(), products.Objects(), CWin32SoftwareLicensingProductObject::ObjectName))
+    {
+        for (auto &p : products.Objects())
+        {
+            std::wcout << &p - &products.Objects()[0] << L" " << p->Description() << std::endl;
+        }
+    }
+#endif
+
+    //.............................................................................................................................
+    // CIM Computer System
+    //
+    TWBEMObjects<CCIMComputerSystemObject> computer;
+    if (WMIQuery<CCIMComputerSystemObject>(wbem.Service(), computer.Objects(), CCIMComputerSystemObject::ObjectName))
+    {
+        for (auto &c : computer.Objects())
+        {
+            std::wcout << &c - &computer.Objects()[0] << L" " <<
+                c->Caption() << L"," <<
+                c->Description() << L"," <<
+                c->InstallDate() << L"," <<
+                c->Status() << L"," <<
+                c->CreationClassName() << L"," <<
+                c->Name() << L"," <<
+                c->NameFormat() << L"," <<
+                c->PrimaryOwnerContact() << L"," <<
+                c->PrimaryOwnerName() << std::endl;
+            for (auto &r : c->Roles())
+            {
+                std::wcout << r << std::endl;
+            }
+        }
+    }
+#ifdef _DEBUG
+    //PrintMemoryInfo(_getpid());
+    std::wcout << L"HEAPCHK=" << _heapchk() << std::endl;
+#endif
+}
+
 //#################################################################################################################################
 //
 int main(int argc, char **argv)
 {
 #ifdef _DEBUG
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF);
+    DWORD dbgFlag = _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF);
+    dbgFlag = (dbgFlag & 0x0000FFFF) | _CRTDBG_CHECK_EVERY_16_DF;
+    _CrtSetDbgFlag(dbgFlag);
+
+    // Send all reports to STDOUT
+    _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
+    _CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT);
+    _CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_FILE);
+    _CrtSetReportFile(_CRT_ERROR, _CRTDBG_FILE_STDOUT);
+    _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
+    _CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDOUT);
+
+    _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
     _CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
-    PrintMemoryInfo(_getpid());
+    _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_DEBUG);
+
+    //PrintMemoryInfo(_getpid());
     std::wcout << L"HEAPCHK=" << _heapchk() << std::endl;
     _CrtMemState s1;
     _CrtMemCheckpoint(&s1);
     _CrtMemDumpStatistics(&s1);
 #endif
+
     try
     {
-        CCOM com(COINIT_MULTITHREADED);
-        CWBEM wbem("ROOT\\CIMV2");
-        wbem.ConnectServer();
-
-        //.............................................................................................................................
-        // Processors
-        //
-        TWBEMObjects<CWin32ProcessorObject> processors;
-        if (WMIQuery<CWin32ProcessorObject>(wbem.Service(), processors.Objects(), CWin32ProcessorObject::ObjectName))
-        {
-            for (auto &p : processors.Objects())
-            {
-                std::wcout << &p - &processors.Objects()[0] << L" " << L"Processor is " << p->Architecture().Text() << L"," << p->Availability().Text() << L"," << p->CpuStatus().Text() << L"," << p->Description() << L"," << p->Voltage().Text() << L"," << p->Frequency().Text().c_str() << L"," << p->CpuFamily().Text() << L"," << p->SocketDesignation() << std::endl;
-            }
-        }
-
-        //.............................................................................................................................
-        // BIOS
-        //
-        TWBEMObjects<CWin32BIOSObject> bios;
-        if (WMIQuery<CWin32BIOSObject>(wbem.Service(), bios.Objects(), CWin32BIOSObject::ObjectName))
-        {
-            for (auto &b : bios.Objects())
-            {
-                std::wcout << &b - &bios.Objects()[0] << L" " << b->Description() << std::endl;
-            }
-        }
-
-        //.............................................................................................................................
-        // Operating System
-        //
-        TWBEMObjects<CWin32OperatingSystemObject> os;
-        if (WMIQuery<CWin32OperatingSystemObject>(wbem.Service(), os.Objects(), CWin32OperatingSystemObject::ObjectName))
-        {
-            for (auto &o : os.Objects())
-            {
-                std::wcout << &o - &os.Objects()[0] << L" " << o->Caption() << std::endl;
-            }
-        }
-
-        //.............................................................................................................................
-        // Printers
-        //
-        TWBEMObjects<CWin32PrinterObject> printers;
-        if (WMIQuery<CWin32PrinterObject>(wbem.Service(), printers.Objects(), CWin32PrinterObject::ObjectName))
-        {
-            for (auto &p : printers.Objects())
-            {
-                std::wcout << &p - &printers.Objects()[0] << L" " << p->Caption() << std::endl;
-            }
-        }
-
-        //.............................................................................................................................
-        // Printer configurations
-        //
-        TWBEMObjects<CWin32PrinterConfigurationObject> printerConfigurations;
-        if (WMIQuery<CWin32PrinterConfigurationObject>(wbem.Service(), printerConfigurations.Objects(), CWin32PrinterConfigurationObject::ObjectName))
-        {
-            for (auto &p : printerConfigurations.Objects())
-            {
-                std::wcout << &p - &printerConfigurations.Objects()[0] << L" " << p->Description() << std::endl;
-            }
-        }
-
-        //.............................................................................................................................
-        // Printer drivers
-        //
-        TWBEMObjects<CWin32PrinterDriverObject> printerDrivers;
-        if (WMIQuery<CWin32PrinterDriverObject>(wbem.Service(), printerDrivers.Objects(), CWin32PrinterDriverObject::ObjectName))
-        {
-            for (auto &p : printerDrivers.Objects())
-            {
-                std::wcout << &p - &printerDrivers.Objects()[0] << L" " << p->Name() << std::endl;
-            }
-        }
-
-        //.............................................................................................................................
-        // Print job
-        //
-        TWBEMObjects<CWin32PrintJobObject> printJobs;
-        if (WMIQuery<CWin32PrintJobObject>(wbem.Service(), printJobs.Objects(), CWin32PrintJobObject::ObjectName))
-        {
-            for (auto &p : printJobs.Objects())
-            {
-                std::wcout << &p - &printJobs.Objects()[0] << L" " << p->Description() << std::endl;
-            }
-        }
-
-#if 0
-        //.............................................................................................................................
-        // Processes
-        //
-        TWBEMObjects<CWin32ProcessObject> processes;
-        if (WMIQuery<CWin32ProcessObject>(wbem.Service(), processes.Objects(), CWin32ProcessObject::ObjectName))
-        {
-            for (auto &p : processes.Objects())
-            {
-                std::wcout << &p - &processes.Objects()[0] << L" " << p->ProcessId() << L" " << p->Name() << L" " << p->HandleCount() << std::endl;
-            }
-        }
-#endif
-
-#if 0
-        //.............................................................................................................................
-        // Software Licensing Product
-        //
-        TWBEMObjects<CWin32SoftwareLicensingProductObject> products;
-        if (WMIQuery<CWin32SoftwareLicensingProductObject>(wbem.Service(), products.Objects(), CWin32SoftwareLicensingProductObject::ObjectName))
-        {
-            for (auto &p : products.Objects())
-            {
-                std::wcout << &p - &products.Objects()[0] << L" " << p->Description() << std::endl;
-            }
-        }
-#endif
-
-        //.............................................................................................................................
-        // CIM Computer System
-        //
-        TWBEMObjects<CCIMComputerSystemObject> computer;
-        if (WMIQuery<CCIMComputerSystemObject>(wbem.Service(), computer.Objects(), CCIMComputerSystemObject::ObjectName))
-        {
-            for (auto &c : computer.Objects())
-            {
-                std::wcout << &c - &computer.Objects()[0] << L" " <<
-                        c->Caption() << L"," <<
-                        c->Description() << L"," <<
-                        c->InstallDate() << L"," <<
-                        c->Status() << L"," <<
-                        c->CreationClassName() << L"," <<
-                        c->Name() << L"," <<
-                        c->NameFormat() << L"," <<
-                        c->PrimaryOwnerContact() << L"," <<
-                        c->PrimaryOwnerName() << std::endl;
-                for (auto &r : c->Roles())
-                {
-                    std::wcout << r << std::endl;
-                }
-            }
-        }
-#ifdef _DEBUG
-        PrintMemoryInfo(_getpid());
-        std::wcout << L"HEAPCHK=" << _heapchk() << std::endl;
-#endif
+        ListWBEMObjects();
     }
     catch (HRESULT hres)
     {
@@ -422,20 +446,19 @@ int main(int argc, char **argv)
     {
         std::cout << "Unknown error, something went wrong " << std::endl;
     }
+
  #ifdef _DEBUG
     _CrtMemState s2;
     _CrtMemCheckpoint(&s2);
     _CrtMemDumpStatistics(&s2);
     
     _CrtMemState s3;
-    if (_CrtMemDifference(&s3, &s1, &s2))
+    if (_CrtMemDifference(&s3, &s1, &s2) == TRUE)
     {
         _CrtMemDumpStatistics(&s3);
     }
-    //if (_CrtDumpMemoryLeaks())
-    //{
-    //    std::wcout << L"MEMORY LEAK!!!" << std::endl;
-    //}
+
  #endif
+    _CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF);
     return 0;
 }

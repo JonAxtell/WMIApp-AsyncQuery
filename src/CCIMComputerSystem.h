@@ -1,5 +1,6 @@
 #pragma once
 
+#include "pch.h"
 #include "CWBEMObjectSink.h"
 #include "CWBEMObjectQuery.h"
 #include "CWBEMObject.h"
@@ -12,7 +13,7 @@
 class CCIMComputerSystemObject : public CWBEMObject
 {
 public:
-    static const std::string ObjectName;
+    static const char* ObjectName;
 
     enum propertyEnum
     {
@@ -30,10 +31,12 @@ public:
 
     CCIMComputerSystemObject() {}
     CCIMComputerSystemObject(const CCIMComputerSystemObject&) = default;
+    CCIMComputerSystemObject(CCIMComputerSystemObject&&) = default;
     ~CCIMComputerSystemObject() {}
     CCIMComputerSystemObject& operator=(const CCIMComputerSystemObject&) = default;
+    CCIMComputerSystemObject& operator=(CCIMComputerSystemObject&&) = default;
 
-    std::shared_ptr<CVariant>  Property(int prop) { return Properties().at(prop); }
+    const char* PropertyName(int prop) { return propertyNames[prop]; }
 
     std::wstring Caption() { return (*Properties().at(PROP_Caption)).FromBSTR(); }
     std::wstring Description() { return (*Properties().at(PROP_Description)).FromBSTR(); }
@@ -47,5 +50,5 @@ public:
     std::wstring NameFormat() { return (*Properties().at(PROP_NameFormat)).FromBSTR(); }
 
 public:
-    static const std::vector<std::string> propertyNames;
+    static const char* propertyNames[];
 };

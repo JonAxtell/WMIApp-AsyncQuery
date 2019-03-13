@@ -12,26 +12,29 @@
 // Members:
 //      _properties
 //
-// Throws:
-//      HRESULT
+// Notes:
+// Uncomment the throw or std::cout line if unrecognised properties are an error or should be noted
 //
-void CWBEMObject::Populate(const std::vector<std::string>& propertyNames, IWbemClassObject __RPC_FAR * pwbemObj)
+void CWBEMObject::Populate(const char** propertyNames, IWbemClassObject __RPC_FAR * pwbemObj)
 {
     _properties.clear();
-    _properties.reserve(propertyNames.size());
-    for (unsigned int i = 0; i < propertyNames.size(); ++i)
+    _properties.reserve(PropertyCount());
+    for (unsigned int i = 0; i < PropertyCount(); ++i)
     {
+        // Convert the ASCII propery name into UTF16 for the call to the Windows API
+        std::wstring name(propertyNames[i], propertyNames[i] + strlen(propertyNames[i]));
+
+        // Get the property's value
         VARIANT var;
-        std::wstring name;
-        name.append(propertyNames.at(i).begin(), propertyNames.at(i).end());
         HRESULT hres = pwbemObj->Get(name.c_str(), 0, &var, 0, 0);
         if (FAILED(hres))
         {
             var.vt = VT_NULL;
-            std::cout << std::string("CWBEMObject::Populate Failed to get ") + propertyNames.at(i) + std::string(". Error code = 0x") + NumberToHex(hres) << std::endl;
+            //std::cout << std::string("CWBEMObject::Populate Failed to get ") + propertyNames[i] + std::string(". Error code = 0x") + NumberToHex(hres) << std::endl;
             //throw std::runtime_error(std::string("CWBEMObject::Populate Failed to get ") + propertyNames.at(i) + std::string(". Error code = 0x") + NumberToHex(hres));
         }
-        std::shared_ptr<CVariant> cvar = std::make_shared<CVariant>(var);
-        _properties.push_back(cvar);
+
+        // Convert the Windows VARIANT type into a CVariant for internal use and put into the list of properties for the object
+        _properties.push_back(new CVariant(var));
     }
 }

@@ -15,6 +15,7 @@ CWBEMObjectQuery::CWBEMObjectQuery(::IWbemServices *pSvc, const std::string wmiC
 //
 CWBEMObjectQuery::~CWBEMObjectQuery()
 {
+    _svc->CancelAsyncCall(_sink);
     _sink->Release();
 }
 
@@ -24,7 +25,9 @@ void CWBEMObjectQuery::Query()
 {
     std::wstring select = L"SELECT * FROM ";
     select.append(_wmiClassName.begin(), _wmiClassName.end());
-    HRESULT hres = _svc->ExecQueryAsync(bstr_t("WQL"),              // Query language
+    BSTR wql;
+    wql = ConvertStringToBSTR("WQL");
+    HRESULT hres = _svc->ExecQueryAsync(wql,                        // Query language
                                         BSTR(select.c_str()),       // Query
                                         WBEM_FLAG_BIDIRECTIONAL,    // Flags
                                         NULL,                       // Context
@@ -34,6 +37,8 @@ void CWBEMObjectQuery::Query()
         _sink->Release();
         throw std::runtime_error(std::string("CWBEMObjectQuery::Query ") + _wmiClassName + std::string(" failed. Error code = 0x") + NumberToHex(hres));
     }
+    ::SysFreeString(wql);
+    //std::wcout << L"Query of " << _wmiClassName.c_str() << L" succeeded" << std::endl;
 }
 
 //#################################################################################################################################

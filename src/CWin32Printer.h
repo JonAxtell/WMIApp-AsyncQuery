@@ -1,5 +1,6 @@
 #pragma once
 
+#include "pch.h"
 #include "CWBEMObjectSink.h"
 #include "CWBEMObjectQuery.h"
 #include "CWBEMObject.h"
@@ -12,7 +13,7 @@
 class CWin32PrinterObject : public CWBEMObject
 {
 public:
-    static const std::string ObjectName;
+    static const char* ObjectName;
 
     enum propertyEnum
     {
@@ -106,14 +107,16 @@ public:
 
     CWin32PrinterObject() {}
     CWin32PrinterObject(const CWin32PrinterObject&) = default;
+    CWin32PrinterObject(CWin32PrinterObject&&) = default;
     ~CWin32PrinterObject() {}
     CWin32PrinterObject& operator=(const CWin32PrinterObject&) = default;
+    CWin32PrinterObject& operator=(CWin32PrinterObject&&) = default;
 
-    std::shared_ptr<CVariant>  Property(int prop) { return Properties().at(prop); }
+    const char* PropertyName(int prop) { return propertyNames[prop]; }
 
     std::wstring Caption() { return (*Properties().at(PROP_Caption)).FromBSTR(); }
     std::wstring Description() { return (*Properties().at(PROP_Description)).FromBSTR(); }
 
 public:
-    static const std::vector<std::string> propertyNames;
+    static const char* propertyNames[];
 };

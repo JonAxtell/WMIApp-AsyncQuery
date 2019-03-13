@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "CWin32BIOS.h"
 
-const std::string CWin32BIOSObject::ObjectName("Win32_Bios");
+const char* CWin32BIOSObject::ObjectName = "Win32_Bios";
 
-const std::vector<std::string> CWin32BIOSObject::propertyNames =
+const char* CWin32BIOSObject::propertyNames[] =
 {
     "BiosCharacteristics",
     "BIOSVersion",
@@ -36,4 +36,5 @@ const std::vector<std::string> CWin32BIOSObject::propertyNames =
     "SystemBiosMinorVersion",
     "TargetOperatingSystem",
     "Version",
+    NULL
 };

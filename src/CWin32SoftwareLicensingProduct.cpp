@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "CWin32SoftwareLicensingProduct.h"
 
-const std::string CWin32SoftwareLicensingProductObject::ObjectName("SoftwareLicensingProduct");
+const char* CWin32SoftwareLicensingProductObject::ObjectName = "SoftwareLicensingProduct";
 
-const std::vector<std::string> CWin32SoftwareLicensingProductObject::propertyNames =
+const char* CWin32SoftwareLicensingProductObject::propertyNames[] =
 {
     "ID",
     "Name",
@@ -49,4 +49,5 @@ const std::vector<std::string> CWin32SoftwareLicensingProductObject::propertyNam
     "TokenActivationCertificateThumbprint",
     "TokenActivationAdditionalInfo",
     "TrustedTime",
+    NULL
 };

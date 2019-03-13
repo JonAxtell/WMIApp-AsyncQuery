@@ -1,46 +1,120 @@
 #pragma once
 
+#include "pch.h"
 #include "CVariant.h"
 #define _WIN32_DCOM
 #include <iostream>
 using namespace std;
 #include <comdef.h>
 #include <Wbemidl.h>
+#ifndef __MINGW_GCC_VERSION
 #pragma comment(lib, "wbemuuid.lib")
+#endif
 #include <vector>
+#include <memory>
 
 //#################################################################################################################################
 //
 // Class that encapsulates the process of retrieving a data set from the WBEM sub system in Windows and storing it 
 // in a vector of variants.
 //
+// A WBEM object is something like the Operating System or a Printer or a Process. Each object can have many properties from
+// common ones like a description to properties tied to the object such as stepping model for a processor. A system can
+// have either single objects (a single OS) or multiple ones (multiple printers).
+//
 class CWBEMObject
 {
 public:
+    // Default constructor
     CWBEMObject() {}
-    CWBEMObject(const CWBEMObject&) = default;
-    virtual ~CWBEMObject() {}
-    CWBEMObject& operator=(const CWBEMObject&) = default;
-    CWBEMObject& operator=(CWBEMObject&&) = default;
+
+    // Copy constructor (does a deep copy of the whole vector)
+    CWBEMObject(const CWBEMObject& other)
+    {
+        for (auto p : other._properties)
+        {
+            _properties.push_back(p);
+        }
+    }
+
+    // Move constructor (just transfers the vector)
+    CWBEMObject(CWBEMObject&& other)
+    {
+        _properties = other._properties;
+        other._properties.clear();
+    }
+
+    // Destructor, deletes all objects in the vector
+    virtual ~CWBEMObject()
+    {
+        for (std::vector<CVariant*>::iterator p = _properties.begin(); p != _properties.end(); ++p)
+        {
+            delete (*p);
+            (*p) = nullptr;
+        }
+        _properties.clear();
+    }
+
+    // Copy assignment (does a deep copy of the whole vector)
+    CWBEMObject& operator=(const CWBEMObject& other)
+    {
+        for (auto p : other._properties)
+        {
+            _properties.push_back(p);
+        }
+        return *this;
+    }
+
+    // Move assignment (just transfers the vector)
+    CWBEMObject& operator=(CWBEMObject&& other)
+    {
+        _properties = other._properties;
+        other._properties.clear();
+        return *this;
+    }
 
     // Method that gets the properties from the service and places them in the _properties array
-    virtual void Populate(const std::vector<std::string>& propertyNames, IWbemClassObject __RPC_FAR * pwbemObj);
+    virtual void Populate(const char** propertyNames, IWbemClassObject __RPC_FAR * pwbemObj);
 
     // Methods to access the properties
-    const std::vector<std::shared_ptr<CVariant> >& Properties() const { return _properties; }
-    const std::shared_ptr<CVariant> Property(int prop) const { return Properties().at(prop); }
+    const std::vector<CVariant* >& Properties() const { return _properties; }
+    const CVariant* Property(int prop) const { return Properties().at(prop); }
+    virtual const char* PropertyName(int prop) = 0;
+    unsigned int PropertyCount() 
+    {
+        if (_propertyCount == 0)
+        {
+            // If count is zero, assume that the list of property names in the derived class hasn't been scanned yet.
+            // This is done here rather because you can't call a method in a derived class from a virtual base class's constructor.
+            while (PropertyName(_propertyCount++))
+            {
+            }
+            --_propertyCount;
+        }
+        return _propertyCount; 
+    }
 
 private:
-    std::vector<std::shared_ptr<CVariant> > _properties;
+    unsigned int _propertyCount{ 0 };
+    std::vector<CVariant* > _properties;
 };
 
 //#################################################################################################################################
+//
+// Template that insantiates potentially multiple instances of CWBEMObjects.
+//
+// The template provides the constructor, destructor and assignment operater to handle the array of pointers to the possibly
+// multiple number of objects. Pointers to the CWBEMObjects are used as the individual WBEM objects derive from the CWBEMObject
+// class and they can be different sizes.
 //
 template<class CWBEMOBJECT>
 class TWBEMObjects
 {
 public:
+    // Default constructor
     TWBEMObjects() {}
+
+    // Copy constructor (does a deep copy of the whole vector)
     TWBEMObjects(const TWBEMObjects& objs)
     {
         for (auto p : objs._objects)
@@ -48,15 +122,27 @@ public:
             _objects.push_back(new CWBEMOBJECT(*p));
         }
     }
+
+    // Move constructor (just transfers the vector)
+    TWBEMObjects(TWBEMObjects&& objs)
+    {
+        _objects = objs._objects;
+        objs.clear();
+    }
+
+    // Destructor, deletes all objects in the vector
     ~TWBEMObjects()
     {
-        for (auto o : _objects)
+        for (typename std::vector<CWBEMOBJECT* >::iterator o = _objects.begin(); o != _objects.end(); ++o)
         {
-            delete o;
+            delete (*o);
+            (*o) = nullptr;
         }
         _objects.clear();
     }
-    TWBEMObjects& operator=(const TWBEMObjects& objs) 
+
+    // Copy assignment (does a deep copy of the whole vector)
+    TWBEMObjects& operator=(const TWBEMObjects& objs)
     {
         for (auto p : objs._objects)
         {
@@ -65,10 +151,20 @@ public:
         return *this;
     }
 
+    // Move assignment (just transfers the vector)
+    TWBEMObjects& operator=(TWBEMObjects&& objs)
+    {
+        _objects = objs._objects;
+        objs.clear();
+        return *this;
+    }
+
+    // Some methods to provide an interface similar to std::vector's
     CWBEMOBJECT* at(int i) { return _objects.at(i); }
     void push_back(const CWBEMOBJECT& obj) { _objects.push_back(obj); }
     void push_back(CWBEMOBJECT&& obj) { _objects.push_back(&obj); }
     size_t size() { return _objects.size(); }
+    void clear() { _objects.clear(); }
 
     std::vector<CWBEMOBJECT* >& Objects() { return _objects; }
 

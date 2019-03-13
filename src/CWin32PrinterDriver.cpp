@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "CWin32PrinterDriver.h"
 
-const std::string CWin32PrinterDriverObject::ObjectName("Win32_PrinterDriver");
+const char* CWin32PrinterDriverObject::ObjectName = "Win32_PrinterDriver";
 
-const std::vector<std::string> CWin32PrinterDriverObject::propertyNames =
+const char* CWin32PrinterDriverObject::propertyNames[] =
 {
     "Caption",
     "ConfigFile",
@@ -27,4 +27,5 @@ const std::vector<std::string> CWin32PrinterDriverObject::propertyNames =
     "SystemCreationClassName",
     "SystemName",
     "Version",
+    NULL
 };

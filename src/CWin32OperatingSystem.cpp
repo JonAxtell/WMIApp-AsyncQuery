@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "CWin32OperatingSystem.h"
 
-const std::string CWin32OperatingSystemObject::ObjectName("Win32_OperatingSystem");
+const char* CWin32OperatingSystemObject::ObjectName = "Win32_OperatingSystem";
 
-static const std::vector<std::string> OperatingSystemSKUNames =
+static const char* OperatingSystemSKUNames[] =
 {
     "An unknown product",                                                           //0
     "Ultimate",                                                                     //1
@@ -111,7 +111,7 @@ static const std::vector<std::string> OperatingSystemSKUNames =
     "Professional with Media Center",                                               //103
 };
 
-const std::vector<std::string> CWin32OperatingSystemObject::propertyNames =
+const char* CWin32OperatingSystemObject::propertyNames[] =
 {
     "BootDevice",
     "BuildNumber",
@@ -179,4 +179,5 @@ const std::vector<std::string> CWin32OperatingSystemObject::propertyNames =
     "TotalVisibleMemorySize",
     "Version",
     "WindowsDirectory",
+    NULL
 };

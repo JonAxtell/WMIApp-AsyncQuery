@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "CWin32PrinterConfiguration.h"
 
-const std::string CWin32PrinterConfigurationObject::ObjectName("Win32_PrinterConfiguration");
+const char* CWin32PrinterConfigurationObject::ObjectName = "Win32_PrinterConfiguration";
 
-const std::vector<std::string> CWin32PrinterConfigurationObject::propertyNames =
+const char* CWin32PrinterConfigurationObject::propertyNames[] =
 {
     "Caption",
     "Description",
@@ -37,5 +37,6 @@ const std::vector<std::string> CWin32PrinterConfigurationObject::propertyNames =
     "TTOption",
     "VerticalResolution",
     "XResolution",
-    "YResolution", 
+    "YResolution",
+    NULL
 };

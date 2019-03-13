@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "CWin32Process.h"
 
-const std::string CWin32ProcessObject::ObjectName("Win32_Process");
+const char* CWin32ProcessObject::ObjectName = "Win32_Process";
 
-const std::vector<std::string> CWin32ProcessObject::propertyNames =
+const char* CWin32ProcessObject::propertyNames[] =
 {
     "CreationClassName",
     "Caption",
@@ -50,4 +50,5 @@ const std::vector<std::string> CWin32ProcessObject::propertyNames =
     "WorkingSetSize",
     "WriteOperationCount",
     "WriteTransferCount",
+    NULL
 };

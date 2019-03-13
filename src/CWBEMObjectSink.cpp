@@ -47,9 +47,10 @@ void CWBEMObjectSink::SetIndicateFlag()
 //
 HRESULT STDMETHODCALLTYPE CWBEMObjectSink::SetStatus(LONG lFlags, HRESULT hResult, BSTR strParam, IWbemClassObject __RPC_FAR *pObjParam)
 {
-    hResult;
-    strParam;
-    pObjParam;
+    //std::wcout << L"Set status for " << Query()->WMIClassName().c_str() << L" to " << lFlags << std::endl;
+    hResult = hResult;
+    strParam = strParam;
+    pObjParam = pObjParam;
     if (lFlags == WBEM_STATUS_COMPLETE)
     {
         ::EnterCriticalSection(&threadLock);
@@ -59,6 +60,10 @@ HRESULT STDMETHODCALLTYPE CWBEMObjectSink::SetStatus(LONG lFlags, HRESULT hResul
     else if (lFlags == WBEM_STATUS_PROGRESS)
     {
         std::wcout << L"Call in progress" << std::endl;
+    }
+    else
+    {
+        std::wcout << L"Flags is " << lFlags << std::endl;
     }
     return WBEM_S_NO_ERROR;
 }

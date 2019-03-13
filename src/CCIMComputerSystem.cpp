@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "CCIMComputerSystem.h"
 
-const std::string CCIMComputerSystemObject::ObjectName("CIM_ComputerSystem");
+const char *CCIMComputerSystemObject::ObjectName = "CIM_ComputerSystem";
 
-const std::vector<std::string> CCIMComputerSystemObject::propertyNames =
+const char* CCIMComputerSystemObject::propertyNames[] =
 {
     "Caption",
     "Description",
@@ -15,4 +15,5 @@ const std::vector<std::string> CCIMComputerSystemObject::propertyNames =
     "PrimaryOwnerName",
     "Roles",
     "NameFormat",
+    NULL,
 };
