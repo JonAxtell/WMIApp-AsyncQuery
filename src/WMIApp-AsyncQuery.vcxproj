@@ -171,6 +171,8 @@
     <ClInclude Include="CWin32SoftwareLicensingProduct.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="TWBEMObjectQuery.h" />
+    <ClInclude Include="TWBEMObjectSink.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CCIMComputerSystem.cpp" />

@@ -12,6 +12,8 @@
 #include "CWin32Process.h"
 #include "CWin32SoftwareLicensingProduct.h"
 #include "CCIMComputerSystem.h"
+#include "TWBEMObjectQuery.h"
+#include "TWBEMObjectSink.h"
 #include <Psapi.h>
 #include <process.h>
 #include <iostream>
@@ -19,7 +21,9 @@
 #include <stdexcept>
 #include <iterator>
 
+#ifndef __MINGW_GCC_VERSION
 #pragma comment(lib, "psapi.lib")
+#endif
 
 //#################################################################################################################################
 //
@@ -182,6 +186,8 @@ private:
 };
 
 #ifdef _DEBUG
+//.................................................................................................................................
+//
 void PrintMemoryInfo(DWORD processID)
 {
     HANDLE hProcess;
@@ -215,6 +221,8 @@ void PrintMemoryInfo(DWORD processID)
     CloseHandle(hProcess);
 }
 
+//.................................................................................................................................
+//
 void heapdump(void)
 {
     _HEAPINFO hinfo;
@@ -250,6 +258,8 @@ void heapdump(void)
 }
 #endif
 
+//---------------------------------------------------------------------------------------------------------------------------------
+//
 void ListWBEMObjects()
 {
     CCOM com(COINIT_MULTITHREADED);
@@ -402,6 +412,8 @@ void ListWBEMObjects()
 //
 int main(int argc, char **argv)
 {
+    argc = argc;
+    argv = argv;
 #ifdef _DEBUG
     DWORD dbgFlag = _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF);
     dbgFlag = (dbgFlag & 0x0000FFFF) | _CRTDBG_CHECK_EVERY_16_DF;

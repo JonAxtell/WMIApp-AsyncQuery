@@ -27,6 +27,10 @@
 #include <windows.h>
 #include <string>
 
+#ifdef __MINGW_GCC_VERSION
+#define ERROR_INVALID_VARIANT   604L
+#endif
+
 template <typename I> std::string NumberToHex(I w, size_t hex_len = sizeof(I) << 1)
 {
     static const char* digits = "0123456789ABCDEF";
