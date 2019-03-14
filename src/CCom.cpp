@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "CCom.h"
+#include <stdexcept>
 
 // COINIT_MULTITHREADED or COINIT_APARTMENTTHREADED
 CCOM::CCOM(COINIT model)
