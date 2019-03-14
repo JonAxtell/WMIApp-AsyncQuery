@@ -108,6 +108,7 @@ void heapdump(void)
 void ListWBEMObjects()
 {
     CCOM com(COINIT_MULTITHREADED);
+    //CWBEM wbem("\\\\COMPUTER\\root\\cimv2", "USER", "PWD");
     CWBEM wbem("ROOT\\CIMV2");
     wbem.ConnectServer();
 
