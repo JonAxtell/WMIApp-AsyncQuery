@@ -17,32 +17,6 @@ const char* CWin32ProcessorObject::_architectureValues[] =
     "x64"
 };
 
-const char* CWin32ProcessorObject::_availabilityValues[] =
-{
-    "",
-    "Other(1)",
-    "Unknown(2)",
-    "Running / Full Power(3)",
-    "Warning(4)",
-    "In Test(5)",
-    "Not Applicable(6)",
-    "Power Off(7)",
-    "Off Line(8)",
-    "Off Duty(9)",
-    "Degraded(10)",
-    "Not Installed(11)",
-    "Install Error(12)",
-    "Power Save - Unknown(13)",
-    "Power Save - Low Power Mode(14)",
-    "Power Save - Standby(15)",
-    "Power Cycle(16)",
-    "Power Save - Warning(17)",
-    "Paused(18)",
-    "Not Ready(19)",
-    "Not Configured(20)",
-    "Quiesced(21)",
-};
-
 const char* CWin32ProcessorObject::_cpuStatusValues[] =
 {
     "Unknown(0)",
@@ -319,12 +293,6 @@ std::wostream& operator<<(std::wostream& os, const CWin32ProcessorObject::CCpuSt
 }
 
 std::wostream& operator<<(std::wostream& os, const CWin32ProcessorObject::CArchitecture& a)
-{
-    os << a.Text().c_str();
-    return os;
-}
-
-std::wostream& operator<<(std::wostream& os, const CWin32ProcessorObject::CAvailability& a)
 {
     os << a.Text().c_str();
     return os;

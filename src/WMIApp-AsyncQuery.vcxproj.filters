@@ -69,6 +69,21 @@
     <ClInclude Include="TWBEMObjectSink.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CCom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CWBEM.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WMIQuery.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CWin32PnpEntity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TWBEMObjects.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -117,6 +132,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CCIMComputerSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CWBEM.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CCom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CWin32PnpEntity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

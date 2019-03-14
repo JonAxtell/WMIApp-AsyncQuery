@@ -156,12 +156,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CCIMComputerSystem.h" />
+    <ClInclude Include="CCom.h" />
     <ClInclude Include="CVariant.h" />
+    <ClInclude Include="CWBEM.h" />
     <ClInclude Include="CWBEMObject.h" />
     <ClInclude Include="CWBEMObjectQuery.h" />
     <ClInclude Include="CWBEMObjectSink.h" />
     <ClInclude Include="CWin32BIOS.h" />
     <ClInclude Include="CWin32OperatingSystem.h" />
+    <ClInclude Include="CWin32PnpEntity.h" />
     <ClInclude Include="CWin32Printer.h" />
     <ClInclude Include="CWin32PrinterConfiguration.h" />
     <ClInclude Include="CWin32PrinterDriver.h" />
@@ -172,16 +175,21 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="TWBEMObjectQuery.h" />
+    <ClInclude Include="TWBEMObjects.h" />
     <ClInclude Include="TWBEMObjectSink.h" />
+    <ClInclude Include="WMIQuery.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CCIMComputerSystem.cpp" />
+    <ClCompile Include="CCom.cpp" />
     <ClCompile Include="CVariant.cpp" />
+    <ClCompile Include="CWBEM.cpp" />
     <ClCompile Include="CWBEMObject.cpp" />
     <ClCompile Include="CWBEMObjectQuery.cpp" />
     <ClCompile Include="CWBEMObjectSink.cpp" />
     <ClCompile Include="CWin32BIOS.cpp" />
     <ClCompile Include="CWin32OperatingSystem.cpp" />
+    <ClCompile Include="CWin32PnpEntity.cpp" />
     <ClCompile Include="CWin32Printer.cpp" />
     <ClCompile Include="CWin32PrinterConfiguration.cpp" />
     <ClCompile Include="CWin32PrinterDriver.cpp" />

@@ -47,45 +47,6 @@ public:
         uint32_t _arch;
     };
 
-    class CAvailability
-    {
-    public:
-        enum valueEnum
-        {
-            AVAIL_OTHER                     = 1,
-            AVAIL_UNKNOWN                   = 2,
-            AVAIL_RUNNING                   = 3,
-            AVAIL_WARNING                   = 4,
-            AVAIL_INTEST                    = 5,
-            AVAIL_NOTAPPLICABLE             = 6,
-            AVAIL_POWEROFF                  = 7,
-            AVAIL_OFFLINE                   = 8,
-            AVAIL_OFFDUTY                   = 9,
-            AVAIL_DEGRADED                  = 10,
-            AVAIL_NOTINSTALLED              = 11,
-            AVAIL_INSTALLERROR              = 12,
-            AVAIL_POWERSAVE_UNKNOWN         = 13,   // The device is known to be in a power save state, but its exact status is unknown.
-            AVAIL_POWERSAVE_LOWPOWERMODE    = 14,   // The device is in a power save state, but is still functioning, and may exhibit decreased performance.
-            AVAIL_POWERSAVE_STANDBY         = 15,   // The device is not functioning, but can be brought to full power quickly.
-            AVAIL_POWERCYCLE                = 16,
-            AVAIL_POWERSAVE_WARNING         = 17,   // The device is in a warning state, though also in a power save state.
-            AVAIL_PAUSED                    = 18,   // The device is paused.
-            AVAIL_NOTREADY                  = 19,   // The device is not ready.
-            AVAIL_NOTCONFIGURED             = 20,   // The device is not configured.
-            AVAIL_QUIESCED                  = 21,
-        };
-        CAvailability(uint32_t avail) : _avail(avail) {}
-        ~CAvailability() {}
-
-        friend std::wostream& operator<<(std::wostream& os, const CAvailability& v);
-
-        const std::string Text() const { return std::string(_availabilityValues[_avail]); }
-        uint32_t Value() const { return _avail; }
-
-    private:
-        uint32_t _avail;
-    };
-
     class CCpuStatus
     {
     public:
@@ -124,7 +85,15 @@ public:
 
         friend std::wostream& operator<<(std::wostream& os, const CCpuVoltage& v);
 
-        const std::string Text() const { return std::to_string(Volts()); }
+        const std::string Text() const 
+        { 
+            double v = Volts();
+            char dec[32];
+            char frac[32];
+            _itoa_s(static_cast<int>(v), dec, 32, 10);
+            _itoa_s(static_cast<int>((v - static_cast<int>(v)) * 100), frac, 32, 10);
+            return std::string(dec) + "." + std::string(frac) + "V";
+        }
         double Value() const { return Volts(); }
 
     private:
@@ -276,14 +245,17 @@ public:
 
     const char* PropertyName(int prop) { return propertyNames[prop]; }
 
+    CWBEMObject::CAvailability Availability() { return (*Properties().at(PROP_Availability)).FromI4(); }
+    CWBEMObject::CConfigManagerErrorCode ConfigManagerErrorCode() { return (*Properties().at(PROP_ConfigManagerErrorCode)).FromI4(); }
+
     CArchitecture Architecture() { return (*Properties().at(PROP_Architecture)).FromI4(); }
-    CAvailability Availability() { return (*Properties().at(PROP_Availability)).FromI4(); }
     CCpuStatus CpuStatus() { return (*Properties().at(PROP_CpuStatus)).FromI4(); }
     std::wstring Description() { return (*Properties().at(PROP_Description)).FromBSTR(); }
     uint32_t CurrentVoltage() { return (*Properties().at(PROP_CurrentVoltage)).FromI4(); }
     uint32_t CurrentClockSpeed() { return (*Properties().at(PROP_CurrentClockSpeed)).FromI4(); }
     uint32_t Family() { return (*Properties().at(PROP_Family)).FromI4(); }
     std::wstring SocketDesignation() { return (*Properties().at(PROP_SocketDesignation)).FromBSTR(); }
+    std::wstring Status() { return (*Properties().at(PROP_Status)).FromBSTR(); }
     uint32_t VoltageCaps() { return (*Properties().at(PROP_VoltageCaps)).FromI4(); }
 
     CCpuVoltage Voltage() { return CCpuVoltage((*Properties().at(PROP_CurrentVoltage)).FromI4(), (*Properties().at(PROP_VoltageCaps)).FromI4()); }
@@ -295,7 +267,6 @@ public:
 
 private:
     static const char* _architectureValues[];
-    static const char* _availabilityValues[];
     static const char* _cpuStatusValues[];
     static const std::map<int, const char*> _cpuFamilyValues;
 };

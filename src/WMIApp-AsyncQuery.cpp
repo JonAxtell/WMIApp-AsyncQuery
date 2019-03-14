@@ -11,9 +11,14 @@
 #include "CWin32PrintJob.h"
 #include "CWin32Process.h"
 #include "CWin32SoftwareLicensingProduct.h"
+#include "CWin32PnpEntity.h"
 #include "CCIMComputerSystem.h"
+#include "CCom.h"
+#include "CWBEM.h"
+#include "TWBEMObjects.h"
 #include "TWBEMObjectQuery.h"
 #include "TWBEMObjectSink.h"
+#include "WMIQuery.h"
 #include <Psapi.h>
 #include <process.h>
 #include <iostream>
@@ -24,166 +29,6 @@
 #ifndef __MINGW_GCC_VERSION
 #pragma comment(lib, "psapi.lib")
 #endif
-
-//#################################################################################################################################
-//
-template<typename COBJECT>
-bool WMIQuery(::IWbemServices *pSvc, std::vector<COBJECT *>& obj, std::string className)
-{
-    try
-    {
-        TWBEMObjectQuery<TWBEMObjectSink<COBJECT> >* query = new TWBEMObjectQuery<TWBEMObjectSink<COBJECT> >(pSvc, className.c_str());
-        std::wcout << L"Querying " << query->WMIClassName().c_str() << std::endl;
-        query->Query();
-        while (!query->IsDone())
-        {
-            ::Sleep(100);
-        }
-        if (!query->HasIndicated())
-        {
-            std::wcout << L"WMIQuery Object " << query->WMIClassName().c_str() << L" not populated." << std::endl;
-            delete query;
-            return false;
-        }
-
-        std::wcout << L"Object " << query->WMIClassName().c_str() << L" populated with " << query->Sink()->Count() << L" items" << std::endl;
-
-        // Transfer the objects out of the sink before the sink loses focus
-        obj = *reinterpret_cast<std::vector<COBJECT *> *>(&query->Sink()->Objects());
-        delete query;
-        return true;
-    }
-    catch (HRESULT hres)
-    {
-        throw std::runtime_error(std::string("WMIQuery Query for ") + className + std::string(" details failed. Error code = 0x") + NumberToHex(hres));
-    }
-    catch (std::runtime_error err)
-    {
-        throw err;
-    }
-    return false;
-}
-
-//#################################################################################################################################
-//
-class CCOM
-{
-public:
-    // COINIT_MULTITHREADED or COINIT_APARTMENTTHREADED
-    CCOM(COINIT model) 
-    {
-        HRESULT hres = ::CoInitializeEx(NULL, model | COINIT_DISABLE_OLE1DDE);
-        if (FAILED(hres))
-        {
-            throw std::runtime_error(std::string("Failed to initialize COM library. Error code = 0x") + NumberToHex(hres));
-        }
-        if (hres == S_FALSE)
-        {
-            throw std::runtime_error(std::string("COM already initialized"));
-        }
-        InitializeSecurity();
-    }
-    ~CCOM() 
-    {
-        ::CoUninitialize();
-    }
-
-    void InitializeSecurity()
-    {
-        HRESULT hres = ::CoInitializeSecurity(NULL,                         // Security descriptor
-                                              -1,                           // COM Authentication
-                                              NULL,                         // Authentication services
-                                              NULL,                         // Reserved
-                                              RPC_C_AUTHN_LEVEL_DEFAULT,    // Authentication level
-                                              RPC_C_IMP_LEVEL_IMPERSONATE,  // Impersonation level
-                                              NULL,                         // Authentication list
-                                              EOAC_NONE,                    // Additional capabilities 
-                                              NULL);                        // Reserved
-        if (FAILED(hres))
-        {
-            throw std::runtime_error(std::string("Failed to initialize security. Error code = 0x") + NumberToHex(hres));
-        }
-    }
-
-private:
-    CCOM(const CCOM&) = delete;
-    CCOM& operator=(const CCOM&) = delete;
-    CCOM* operator&() = delete;
-};
-
-//#################################################################################################################################
-//
-class CWBEM
-{
-public:
-    // Network resource should be ::_bstr_t(L"ROOT\\CIMV2")
-    CWBEM(const std::string& networkResource) : _networkResource(networkResource), _pLoc(nullptr), _pSvc(nullptr)
-    {
-        _pLoc = NULL;
-        HRESULT hres = ::CoCreateInstance(::CLSID_WbemLocator, 0, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&_pLoc));
-        if (FAILED(hres))
-        {
-            throw std::runtime_error(std::string("CWBEM::CWBEM Failed to create IWbemLocator object. Error code = 0x") + NumberToHex(hres));
-        }
-    }
-    ~CWBEM() 
-    {
-        if (_pSvc != nullptr)
-        {
-            _pSvc->Release();
-        }
-        if (_pLoc != nullptr)
-        { 
-            _pLoc->Release();
-        }
-    }
-
-    void ConnectServer()
-    {
-        // Use WBEM_FLAG_CONNECT_USE_MAX_WAIT to limit wait to 2 minutes or less
-        BSTR netres;
-        netres = ConvertStringToBSTR(_networkResource.c_str());
-        HRESULT hres = _pLoc->ConnectServer(netres,                             // Network resource
-                                            NULL,                               // User
-                                            NULL,                               // Password
-                                            0,                                  // Locale
-                                            WBEM_FLAG_CONNECT_USE_MAX_WAIT,     // Security flags
-                                            0,                                  // Authority
-                                            0,                                  // WBEM context
-                                            &_pSvc);                            // WBEM Services namespace
-        if (FAILED(hres))
-        {
-            throw std::runtime_error(std::string("CWBEM::ConnectServer Could not connect to ") + _networkResource + std::string(". Error code = 0x") + NumberToHex(hres));
-        }
-        ::SysFreeString(netres);
-
-        std::wcout << L"Connected to " << _networkResource.c_str() << L" WMI namespace" << std::endl;
-
-        hres = ::CoSetProxyBlanket(_pSvc,                       // Indicates the proxy to set
-                                   RPC_C_AUTHN_WINNT,           // RPC_C_AUTHN_xxx
-                                   RPC_C_AUTHZ_NONE,            // RPC_C_AUTHZ_xxx
-                                   NULL,                        // Server principal name 
-                                   RPC_C_AUTHN_LEVEL_CALL,      // RPC_C_AUTHN_LEVEL_xxx 
-                                   RPC_C_IMP_LEVEL_IMPERSONATE, // RPC_C_IMP_LEVEL_xxx
-                                   NULL,                        // client identity
-                                   EOAC_NONE);                  // proxy capabilities 
-        if (FAILED(hres))
-        {
-            throw std::runtime_error(std::string("Could not set proxy blanket. Error code = 0x" + NumberToHex(hres)));
-        }
-    }
-
-    ::IWbemServices* Service() { return _pSvc; }
-
-private:
-    CWBEM(const CWBEM&) = delete;
-    CWBEM& operator=(const CWBEM&) = delete;
-    CWBEM* operator&() = delete;
-
-    const std::string _networkResource;
-    ::IWbemLocator *_pLoc;
-    ::IWbemServices *_pSvc;
-};
 
 #ifdef _DEBUG
 //.................................................................................................................................
@@ -274,7 +119,9 @@ void ListWBEMObjects()
     {
         for (auto &p : processors.Objects())
         {
-            std::wcout << &p - &processors.Objects()[0] << L" " << L"Processor is " << p->Architecture() << L"," << p->Availability() << L"," << p->CpuStatus() << L"," << p->Description() << L"," << p->Voltage() << L"," << p->Frequency() << L"," << p->CpuFamily() << L"," << p->SocketDesignation() << std::endl;
+            std::wcout << &p - &processors.Objects()[0] << L" " << L"Processor is " << p->Architecture() << L"," << p->CpuFamily() << L"," << p->Description() << L"," << p->SocketDesignation() << std::endl;
+            std::wcout << L"\t" << p->Availability() << L"," << p->CpuStatus() << L"," << p->Voltage() << L"," << p->Frequency() << std::endl;
+            std::wcout << L"\t" << p->Status() << L"," << p->ConfigManagerErrorCode() << std::endl;
         }
     }
 
@@ -339,7 +186,7 @@ void ListWBEMObjects()
     }
 
     //.............................................................................................................................
-    // Print job
+    // Print jobs
     //
     TWBEMObjects<CWin32PrintJobObject> printJobs;
     if (WMIQuery<CWin32PrintJobObject>(wbem.Service(), printJobs.Objects(), CWin32PrintJobObject::ObjectName))
@@ -350,7 +197,7 @@ void ListWBEMObjects()
         }
     }
 
-#if 1
+#if 0
     //.............................................................................................................................
     // Processes
     //
@@ -402,6 +249,49 @@ void ListWBEMObjects()
             }
         }
     }
+
+    //.............................................................................................................................
+    // Pnp Devices
+    //
+    TWBEMObjects<CWin32PnpEntityObject> devices;
+    if (WMIQuery<CWin32PnpEntityObject>(wbem.Service(), devices.Objects(), CWin32PnpEntityObject::ObjectName))
+    {
+        for (auto &d : devices.Objects())
+        {
+            std::wcout << &d - &devices.Objects()[0] << L" ";
+            if (d->Description().empty() && d->Caption().empty())
+            {
+                // Description and caption are blank so use name
+                std::wcout << d->Name();
+            }
+            else if (d->Description().empty())
+            {
+                // No description, so use caption
+                std::wcout << d->Caption();
+            }
+            else if (d->Caption().empty())
+            {
+                // No caption, so use description
+                std::wcout << d->Description();
+            }
+            else if (d->Description() != d->Caption())
+            {
+                // Description is not the same as caption, so print both
+                std::wcout << d->Description() << L"," << d->Caption();
+            }
+            else
+            {
+                // Description and caption aren't blank and are the same so just use description
+                std::wcout << d->Description();
+            }
+            std::wcout << std::endl;
+            for (auto &i : d->CompatibleID())
+            {
+                std::wcout << L"\t" << i << L" " << std::endl;
+            }
+        }
+    }
+
 #ifdef _DEBUG
     //PrintMemoryInfo(_getpid());
     std::wcout << L"HEAPCHK=" << _heapchk() << std::endl;
@@ -420,13 +310,14 @@ int main(int argc, char **argv)
     _CrtSetDbgFlag(dbgFlag);
 
     // Send all reports to STDOUT
-    _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
-    _CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT);
-    _CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_FILE);
-    _CrtSetReportFile(_CRT_ERROR, _CRTDBG_FILE_STDOUT);
-    _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
-    _CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDOUT);
+    //_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
+    //_CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT);
+    //_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_FILE);
+    //_CrtSetReportFile(_CRT_ERROR, _CRTDBG_FILE_STDOUT);
+    //_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
+    //_CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDOUT);
 
+    // Send all reports to debug channel
     _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
     _CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
     _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_DEBUG);
@@ -444,7 +335,7 @@ int main(int argc, char **argv)
     }
     catch (HRESULT hres)
     {
-        std::cout << "Error 0x" << std::hex << hres << std::dec << std::endl;
+        std::cout << "HRESULT Error 0x" << std::hex << hres << std::dec << std::endl;
     }
     catch (std::runtime_error err)
     {

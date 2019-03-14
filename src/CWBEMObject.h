@@ -25,6 +25,63 @@ using namespace std;
 class CWBEMObject
 {
 public:
+
+    // Property common to many objects
+    class CAvailability
+    {
+    public:
+        enum valueEnum
+        {
+            AVAIL_OTHER = 1,
+            AVAIL_UNKNOWN = 2,
+            AVAIL_RUNNING = 3,
+            AVAIL_WARNING = 4,
+            AVAIL_INTEST = 5,
+            AVAIL_NOTAPPLICABLE = 6,
+            AVAIL_POWEROFF = 7,
+            AVAIL_OFFLINE = 8,
+            AVAIL_OFFDUTY = 9,
+            AVAIL_DEGRADED = 10,
+            AVAIL_NOTINSTALLED = 11,
+            AVAIL_INSTALLERROR = 12,
+            AVAIL_POWERSAVE_UNKNOWN = 13,       // The device is known to be in a power save state, but its exact status is unknown.
+            AVAIL_POWERSAVE_LOWPOWERMODE = 14,  // The device is in a power save state, but is still functioning, and may exhibit decreased performance.
+            AVAIL_POWERSAVE_STANDBY = 15,       // The device is not functioning, but can be brought to full power quickly.
+            AVAIL_POWERCYCLE = 16,
+            AVAIL_POWERSAVE_WARNING = 17,       // The device is in a warning state, though also in a power save state.
+            AVAIL_PAUSED = 18,                  // The device is paused.
+            AVAIL_NOTREADY = 19,                // The device is not ready.
+            AVAIL_NOTCONFIGURED = 20,           // The device is not configured.
+            AVAIL_QUIESCED = 21,
+        };
+        CAvailability(uint32_t avail) : _avail(avail) {}
+        ~CAvailability() {}
+
+        friend std::wostream& operator<<(std::wostream& os, const CAvailability& v);
+
+        const std::string Text() const { return std::string(_availabilityValues[_avail]); }
+        uint32_t Value() const { return _avail; }
+
+    private:
+        uint32_t _avail;
+    };
+
+    // Property common to many objects
+    class CConfigManagerErrorCode
+    {
+    public:
+        CConfigManagerErrorCode(uint32_t error) : _error(error) {}
+        ~CConfigManagerErrorCode() {}
+
+        friend std::wostream& operator<<(std::wostream& os, const CConfigManagerErrorCode& f);
+
+        const std::string Text() const { return std::string(_configManagerErrorCodeValues[_error]); }
+        uint32_t Value() const { return _error; }
+
+    private:
+        uint32_t _error;
+    };
+
     // Default constructor
     CWBEMObject() {}
 
@@ -97,77 +154,7 @@ public:
 private:
     unsigned int _propertyCount{ 0 };
     std::vector<CVariant* > _properties;
-};
 
-//#################################################################################################################################
-//
-// Template that insantiates potentially multiple instances of CWBEMObjects.
-//
-// The template provides the constructor, destructor and assignment operater to handle the array of pointers to the possibly
-// multiple number of objects. Pointers to the CWBEMObjects are used as the individual WBEM objects derive from the CWBEMObject
-// class and they can be different sizes.
-//
-template<class CWBEMOBJECT>
-class TWBEMObjects
-{
-public:
-    // Default constructor
-    TWBEMObjects() {}
-
-    // Copy constructor (does a deep copy of the whole vector)
-    TWBEMObjects(const TWBEMObjects& objs)
-    {
-        for (auto p : objs._objects)
-        {
-            _objects.push_back(new CWBEMOBJECT(*p));
-        }
-    }
-
-    // Move constructor (just transfers the vector)
-    TWBEMObjects(TWBEMObjects&& objs)
-    {
-        _objects = objs._objects;
-        objs.clear();
-    }
-
-    // Destructor, deletes all objects in the vector
-    ~TWBEMObjects()
-    {
-        for (typename std::vector<CWBEMOBJECT* >::iterator o = _objects.begin(); o != _objects.end(); ++o)
-        {
-            delete (*o);
-            (*o) = nullptr;
-        }
-        _objects.clear();
-    }
-
-    // Copy assignment (does a deep copy of the whole vector)
-    TWBEMObjects& operator=(const TWBEMObjects& objs)
-    {
-        for (auto p : objs._objects)
-        {
-            _objects.push_back(new CWBEMOBJECT(p));
-        }
-        return *this;
-    }
-
-    // Move assignment (just transfers the vector)
-    TWBEMObjects& operator=(TWBEMObjects&& objs)
-    {
-        _objects = objs._objects;
-        objs.clear();
-        return *this;
-    }
-
-    // Some methods to provide an interface similar to std::vector's
-    CWBEMOBJECT* at(int i) { return _objects.at(i); }
-    void push_back(const CWBEMOBJECT& obj) { _objects.push_back(obj); }
-    void push_back(CWBEMOBJECT&& obj) { _objects.push_back(&obj); }
-    size_t size() { return _objects.size(); }
-    void clear() { _objects.clear(); }
-
-    std::vector<CWBEMOBJECT* >& Objects() { return _objects; }
-
-private:
-    std::vector<CWBEMOBJECT* > _objects;
+    static const char* _availabilityValues[];
+    static const char* _configManagerErrorCodeValues[];
 };
