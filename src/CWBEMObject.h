@@ -2,6 +2,7 @@
 
 #include "pch.h"
 #include "CVariant.h"
+#include "CWBEMProperty.h"
 #define _WIN32_DCOM
 #include <iostream>
 using namespace std;
@@ -25,63 +26,6 @@ using namespace std;
 class CWBEMObject
 {
 public:
-
-    // Property common to many objects
-    class CAvailability
-    {
-    public:
-        enum valueEnum
-        {
-            AVAIL_OTHER = 1,
-            AVAIL_UNKNOWN = 2,
-            AVAIL_RUNNING = 3,
-            AVAIL_WARNING = 4,
-            AVAIL_INTEST = 5,
-            AVAIL_NOTAPPLICABLE = 6,
-            AVAIL_POWEROFF = 7,
-            AVAIL_OFFLINE = 8,
-            AVAIL_OFFDUTY = 9,
-            AVAIL_DEGRADED = 10,
-            AVAIL_NOTINSTALLED = 11,
-            AVAIL_INSTALLERROR = 12,
-            AVAIL_POWERSAVE_UNKNOWN = 13,       // The device is known to be in a power save state, but its exact status is unknown.
-            AVAIL_POWERSAVE_LOWPOWERMODE = 14,  // The device is in a power save state, but is still functioning, and may exhibit decreased performance.
-            AVAIL_POWERSAVE_STANDBY = 15,       // The device is not functioning, but can be brought to full power quickly.
-            AVAIL_POWERCYCLE = 16,
-            AVAIL_POWERSAVE_WARNING = 17,       // The device is in a warning state, though also in a power save state.
-            AVAIL_PAUSED = 18,                  // The device is paused.
-            AVAIL_NOTREADY = 19,                // The device is not ready.
-            AVAIL_NOTCONFIGURED = 20,           // The device is not configured.
-            AVAIL_QUIESCED = 21,
-        };
-        CAvailability(uint32_t avail) : _avail(avail) {}
-        ~CAvailability() {}
-
-        friend std::wostream& operator<<(std::wostream& os, const CAvailability& v);
-
-        const std::string Text() const { return std::string(_availabilityValues[_avail]); }
-        uint32_t Value() const { return _avail; }
-
-    private:
-        uint32_t _avail;
-    };
-
-    // Property common to many objects
-    class CConfigManagerErrorCode
-    {
-    public:
-        CConfigManagerErrorCode(uint32_t error) : _error(error) {}
-        ~CConfigManagerErrorCode() {}
-
-        friend std::wostream& operator<<(std::wostream& os, const CConfigManagerErrorCode& f);
-
-        const std::string Text() const { return std::string(_configManagerErrorCodeValues[_error]); }
-        uint32_t Value() const { return _error; }
-
-    private:
-        uint32_t _error;
-    };
-
     // Default constructor
     CWBEMObject() {}
 
@@ -104,7 +48,7 @@ public:
     // Destructor, deletes all objects in the vector
     virtual ~CWBEMObject()
     {
-        for (std::vector<CVariant*>::iterator p = _properties.begin(); p != _properties.end(); ++p)
+        for (std::vector<CWBEMProperty*>::iterator p = _properties.begin(); p != _properties.end(); ++p)
         {
             delete (*p);
             (*p) = nullptr;
@@ -130,14 +74,24 @@ public:
         return *this;
     }
 
+    // Public swap function for use in move operations
+    friend void swap(CWBEMObject& first, CWBEMObject& second)
+    {
+        using std::swap;
+
+        swap(first, second);
+    }
+
     // Method that gets the properties from the service and places them in the _properties array
     virtual void Populate(const char** propertyNames, IWbemClassObject __RPC_FAR * pwbemObj);
 
     // Methods to access the properties
-    const std::vector<CVariant* >& Properties() const { return _properties; }
-    const CVariant* Property(int prop) const { return Properties().at(prop); }
+    const std::vector<CWBEMProperty* >& Properties() const { return _properties; }
+    const CVariant Property(int prop) const { return (*Properties().at(prop)); }
+
+    // Methdos to access details about the properties
     virtual const char* PropertyName(int prop) = 0;
-    unsigned int PropertyCount() 
+    unsigned int PropertyCount()
     {
         if (_propertyCount == 0)
         {
@@ -153,8 +107,5 @@ public:
 
 private:
     unsigned int _propertyCount{ 0 };
-    std::vector<CVariant* > _properties;
-
-    static const char* _availabilityValues[];
-    static const char* _configManagerErrorCodeValues[];
+    std::vector<CWBEMProperty* > _properties;
 };

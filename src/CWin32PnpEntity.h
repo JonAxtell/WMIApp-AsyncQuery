@@ -54,8 +54,8 @@ public:
 
     const char* PropertyName(int prop) { return propertyNames[prop]; }
 
-    CWBEMObject::CAvailability Availability() { return (*Properties().at(PROP_Availability)).FromI4(); }
-    CWBEMObject::CConfigManagerErrorCode ConfigManagerErrorCode() { return (*Properties().at(PROP_ConfigManagerErrorCode)).FromI4(); }
+    CWBEMProperty_Availability Availability() { return (*Properties().at(PROP_Availability)); }
+    CWBEMProperty_ConfigManagerErrorCode ConfigManagerErrorCode() { return (*Properties().at(PROP_ConfigManagerErrorCode)); }
 
     std::wstring Caption() { return (*Properties().at(PROP_Caption)).FromBSTR(); }
     std::wstring Description() { return (*Properties().at(PROP_Description)).FromBSTR(); }

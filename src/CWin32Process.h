@@ -74,10 +74,10 @@ public:
     const char* PropertyName(int prop) { return propertyNames[prop]; }
 
     std::wstring Description() { return (*Properties().at(PROP_Description)).FromBSTR(); }
-    uint16_t ExecutionState() { return (*Properties().at(PROP_ExecutionState)).FromI4(); }
-    uint16_t HandleCount() { return (*Properties().at(PROP_HandleCount)).FromI4(); }
+    uint32_t ExecutionState() { return (*Properties().at(PROP_ExecutionState)).FromI4(); }
+    uint32_t HandleCount() { return (*Properties().at(PROP_HandleCount)).FromI4(); }
     std::wstring Name() { return (*Properties().at(PROP_Name)).FromBSTR(); }
-    uint16_t ProcessId() { return (*Properties().at(PROP_ProcessId)).FromI4(); }
+    uint32_t ProcessId() { return (*Properties().at(PROP_ProcessId)).FromI4(); }
 
 public:
     static const char* propertyNames[];

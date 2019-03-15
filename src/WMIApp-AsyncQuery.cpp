@@ -2,6 +2,8 @@
 //
 
 #include "pch.h"
+#include "CWBEMObject.h"
+#include "CWBEMProperty.h"
 #include "CWin32Processor.h"
 #include "CWin32BIOS.h"
 #include "CWin32OperatingSystem.h"
@@ -123,6 +125,10 @@ void ListWBEMObjects()
             std::wcout << &p - &processors.Objects()[0] << L" " << L"Processor is " << p->Architecture() << L"," << p->CpuFamily() << L"," << p->Description() << L"," << p->SocketDesignation() << std::endl;
             std::wcout << L"\t" << p->Availability() << L"," << p->CpuStatus() << L"," << p->Voltage() << L"," << p->Frequency() << std::endl;
             std::wcout << L"\t" << p->Status() << L"," << p->ConfigManagerErrorCode() << std::endl;
+
+            CWBEMProperty avail = p->Availability();
+            CWBEMProperty avail2 = avail;
+            std::wcout << avail2 << std::endl;
         }
     }
 
@@ -198,7 +204,7 @@ void ListWBEMObjects()
         }
     }
 
-#if 0
+#if 1
     //.............................................................................................................................
     // Processes
     //
@@ -212,7 +218,7 @@ void ListWBEMObjects()
     }
 #endif
 
-#if 0
+#if 1
     //.............................................................................................................................
     // Software Licensing Product
     //
@@ -251,6 +257,7 @@ void ListWBEMObjects()
         }
     }
 
+#if 1
     //.............................................................................................................................
     // Pnp Devices
     //
@@ -292,6 +299,7 @@ void ListWBEMObjects()
             }
         }
     }
+#endif
 
 #ifdef _DEBUG
     //PrintMemoryInfo(_getpid());

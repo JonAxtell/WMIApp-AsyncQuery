@@ -162,6 +162,7 @@
     <ClInclude Include="CWBEMObject.h" />
     <ClInclude Include="CWBEMObjectQuery.h" />
     <ClInclude Include="CWBEMObjectSink.h" />
+    <ClInclude Include="CWBEMProperty.h" />
     <ClInclude Include="CWin32BIOS.h" />
     <ClInclude Include="CWin32OperatingSystem.h" />
     <ClInclude Include="CWin32PnpEntity.h" />
@@ -187,6 +188,7 @@
     <ClCompile Include="CWBEMObject.cpp" />
     <ClCompile Include="CWBEMObjectQuery.cpp" />
     <ClCompile Include="CWBEMObjectSink.cpp" />
+    <ClCompile Include="CWBEMProperty.cpp" />
     <ClCompile Include="CWin32BIOS.cpp" />
     <ClCompile Include="CWin32OperatingSystem.cpp" />
     <ClCompile Include="CWin32PnpEntity.cpp" />

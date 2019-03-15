@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pch.h"
+#include "CWBEMProperty.h"
 #include "CWBEMObjectSink.h"
 #include "CWBEMObjectQuery.h"
 #include "CWBEMObject.h"
@@ -245,8 +246,8 @@ public:
 
     const char* PropertyName(int prop) { return propertyNames[prop]; }
 
-    CWBEMObject::CAvailability Availability() { return (*Properties().at(PROP_Availability)).FromI4(); }
-    CWBEMObject::CConfigManagerErrorCode ConfigManagerErrorCode() { return (*Properties().at(PROP_ConfigManagerErrorCode)).FromI4(); }
+    CWBEMProperty_Availability Availability() { return CWBEMProperty_Availability( *(Properties().at(PROP_Availability))); }
+    CWBEMProperty_ConfigManagerErrorCode ConfigManagerErrorCode() { return CWBEMProperty_Availability(*(Properties().at(PROP_ConfigManagerErrorCode))); }
 
     CArchitecture Architecture() { return (*Properties().at(PROP_Architecture)).FromI4(); }
     CCpuStatus CpuStatus() { return (*Properties().at(PROP_CpuStatus)).FromI4(); }
