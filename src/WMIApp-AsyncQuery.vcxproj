@@ -146,6 +146,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);PSAPI_VERSION=1</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AssemblerOutput>All</AssemblerOutput>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -164,6 +165,13 @@
     <ClInclude Include="CWBEMObjectSink.h" />
     <ClInclude Include="CWBEMProperty.h" />
     <ClInclude Include="CWin32BIOS.h" />
+    <ClInclude Include="CWin32ClassicCOMApplicationClasses.h" />
+    <ClInclude Include="CWin32ClassicCOMClass.h" />
+    <ClInclude Include="CWin32COMApplication.h" />
+    <ClInclude Include="CWin32COMApplicationClasses.h" />
+    <ClInclude Include="CWin32COMClass.h" />
+    <ClInclude Include="CWin32DCOMApplication.h" />
+    <ClInclude Include="CWin32Desktop.h" />
     <ClInclude Include="CWin32OperatingSystem.h" />
     <ClInclude Include="CWin32PnpEntity.h" />
     <ClInclude Include="CWin32Printer.h" />
@@ -172,7 +180,11 @@
     <ClInclude Include="CWin32PrintJob.h" />
     <ClInclude Include="CWin32Process.h" />
     <ClInclude Include="CWin32Processor.h" />
+    <ClInclude Include="CWin32Product.h" />
+    <ClInclude Include="CWin32SerialPort.h" />
     <ClInclude Include="CWin32SoftwareLicensingProduct.h" />
+    <ClInclude Include="CWin32USBController.h" />
+    <ClInclude Include="CWin32USBControllerDevice.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="TWBEMObjectQuery.h" />
@@ -190,6 +202,13 @@
     <ClCompile Include="CWBEMObjectSink.cpp" />
     <ClCompile Include="CWBEMProperty.cpp" />
     <ClCompile Include="CWin32BIOS.cpp" />
+    <ClCompile Include="CWin32ClassicCOMApplicationClasses.cpp" />
+    <ClCompile Include="CWin32ClassicCOMClass.cpp" />
+    <ClCompile Include="CWin32COMApplication.cpp" />
+    <ClCompile Include="CWin32COMApplicationClasses.cpp" />
+    <ClCompile Include="CWin32COMClass.cpp" />
+    <ClCompile Include="CWin32DCOMApplication.cpp" />
+    <ClCompile Include="CWin32Desktop.cpp" />
     <ClCompile Include="CWin32OperatingSystem.cpp" />
     <ClCompile Include="CWin32PnpEntity.cpp" />
     <ClCompile Include="CWin32Printer.cpp" />
@@ -198,7 +217,11 @@
     <ClCompile Include="CWin32PrintJob.cpp" />
     <ClCompile Include="CWin32Process.cpp" />
     <ClCompile Include="CWin32Processor.cpp" />
+    <ClCompile Include="CWin32Product.cpp" />
+    <ClCompile Include="CWin32SerialPort.cpp" />
     <ClCompile Include="CWin32SoftwareLicensingProduct.cpp" />
+    <ClCompile Include="CWin32USBController.cpp" />
+    <ClCompile Include="CWin32USBControllerDevice.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

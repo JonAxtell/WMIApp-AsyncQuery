@@ -3,6 +3,25 @@
 
 //#################################################################################################################################
 //
+std::vector<CWBEMObject::index_property_t> CWBEMObject::Properties(enum VARENUM type) const
+{
+    std::vector<index_property_t> props;
+
+    for (auto &p : _properties)
+    {
+        if (p->Type() == type)
+        {
+            index_property_t item;
+            item.first = static_cast<int>(&p - &_properties[0]);
+            item.second = p;
+            props.push_back(item);
+        }
+    }
+    return props;
+}
+
+//#################################################################################################################################
+//
 // Retrieves all the data for a WBEM object and populates the array of variants
 //
 // Parameters:

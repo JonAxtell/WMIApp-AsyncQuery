@@ -759,6 +759,25 @@ std::vector<std::wstring> CVariant::FromArrayBSTR() const
 
 //#################################################################################################################################
 //
+void* CVariant::FromReference() const
+{
+    if (NullOrEmpty())
+    {
+#ifdef CVARIANT_THROW_ON_NULL_OR_EMPTY
+        throw (HRESULT)ERROR_INVALID_VARIANT;
+#else
+        return nullptr;
+#endif
+    }
+    if (IsArray() || !CheckType(VT_PTR))
+    {
+        throw (HRESULT)ERROR_INVALID_VARIANT;
+    }
+    return _variant.byref;
+}
+
+//#################################################################################################################################
+//
 bool CVariant::operator==(const bool& other) const
 {
     if (this->Type() != VT_BOOL)
@@ -861,6 +880,14 @@ bool CVariant::operator==(const CVariant& other) const
         {
             return this->_variant.dblVal == other._variant.dblVal;
         }
+        case VT_BSTR:
+        {
+            return this->_variant.bstrVal == other._variant.bstrVal;
+        }
+        case VT_CY:
+        {
+            return this->_variant.cyVal.int64 == other._variant.cyVal.int64;
+        }
         case VT_DATE:
         {
             return this->_variant.date == other._variant.date;
@@ -880,14 +907,14 @@ bool CVariant::operator==(const CVariant* other) const
 //
 bool CVariant::operator!=(const CVariant& other) const
 {
-    return *this != other;
+    return !(*this == other);
 }
 
 //#################################################################################################################################
 //
 bool CVariant::operator!=(const CVariant* other) const
 {
-    return *this != *other;
+    return !(*this == *other);
 }
 
 //#################################################################################################################################
@@ -978,6 +1005,16 @@ std::wostream& operator<<(std::wostream& os, const CVariant& v)
             os << v.FromBSTR();
             break;
         }
+        case VT_CY:
+        {
+            os << v.FromCurrency();
+            break;
+        }
+        case VT_DATE:
+        {
+            os << v.FromDATETIME();
+            break;
+        }
         default:
         {
             os << L"????";
@@ -985,6 +1022,14 @@ std::wostream& operator<<(std::wostream& os, const CVariant& v)
         }
     }
     return os;
+}
+
+std::wstring CVariant::ToString() const
+{
+    std::wstringstream strstream;
+
+    strstream << _variant;
+    return strstream.str();
 }
 
 //=================================================================================================================================

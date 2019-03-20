@@ -3,38 +3,21 @@
 #include "pch.h"
 #include "CVariant.h"
 
+//#################################################################################################################################
+//
 class CWBEMProperty : public CVariant
 {
 public:
-    CWBEMProperty() : CVariant() {}
-    CWBEMProperty(const CWBEMProperty& variant) : CVariant(variant) {}
-    CWBEMProperty(CWBEMProperty&& variant) : CVariant(variant) {}
     CWBEMProperty(const CVariant& variant) : CVariant(variant) {}
     CWBEMProperty(CVariant&& variant) : CVariant(variant) {}
     CWBEMProperty(const VARIANT& variant) : CVariant(variant) {}
     CWBEMProperty(VARIANT&& variant) : CVariant(variant) {}
-    ~CWBEMProperty() {}
-    CWBEMProperty& operator=(CWBEMProperty v)
-    {
-        (CVariant)*this = (const CVariant)v;
-        return *this;
-    }
-    CWBEMProperty& operator=(CWBEMProperty&& v)
-    {
-        (CVariant)*this = (const CVariant)v;
-        return *this;
-    }
-
-    // Public swap function for use in move operations
-    friend void swap(CWBEMProperty& first, CWBEMProperty& second)
-    {
-        using std::swap;
-
-        swap(first, second);
-    }
 };
 
+//#################################################################################################################################
+//
 // Property common to many objects
+//
 class CWBEMProperty_Availability : public CWBEMProperty
 {
 public:
@@ -62,22 +45,8 @@ public:
         AVAIL_NOTCONFIGURED = 20,           // The device is not configured.
         AVAIL_QUIESCED = 21,
     };
-    CWBEMProperty_Availability() : CWBEMProperty() {}
-    CWBEMProperty_Availability(const CWBEMProperty_Availability& variant) : CWBEMProperty(variant) {}
-    CWBEMProperty_Availability(CWBEMProperty_Availability&& variant) : CWBEMProperty(variant) {}
-    CWBEMProperty_Availability(const CVariant& variant) : CWBEMProperty(variant) {}
-    CWBEMProperty_Availability(CVariant&& variant) : CWBEMProperty(variant) {}
-    ~CWBEMProperty_Availability() {}
-    CWBEMProperty_Availability& operator=(const CWBEMProperty_Availability& v)
-    {
-        *this = v;
-        return *this;
-    }
-    CWBEMProperty_Availability& operator=(CWBEMProperty_Availability&& v)
-    {
-        *this = v;
-        return *this;
-    }
+    CWBEMProperty_Availability(const CWBEMProperty& property) : CWBEMProperty(property) {}
+    CWBEMProperty_Availability(CWBEMProperty&& property) : CWBEMProperty(property) {}
 
     friend std::wostream& operator<<(std::wostream& os, const CWBEMProperty_Availability& v);
 
@@ -90,26 +59,15 @@ private:
     static const char* _values[];
 };
 
+//#################################################################################################################################
+//
 // Property common to many objects
+//
 class CWBEMProperty_ConfigManagerErrorCode : public CWBEMProperty
 {
 public:
-    CWBEMProperty_ConfigManagerErrorCode() : CWBEMProperty() {}
-    CWBEMProperty_ConfigManagerErrorCode(const CWBEMProperty_ConfigManagerErrorCode& variant) : CWBEMProperty(variant) {}
-    CWBEMProperty_ConfigManagerErrorCode(CWBEMProperty_ConfigManagerErrorCode&& variant) : CWBEMProperty(variant) {}
-    CWBEMProperty_ConfigManagerErrorCode(const CVariant& variant) : CWBEMProperty(variant) {}
-    CWBEMProperty_ConfigManagerErrorCode(CVariant&& variant) : CWBEMProperty(variant) {}
-    ~CWBEMProperty_ConfigManagerErrorCode() {}
-    CWBEMProperty_ConfigManagerErrorCode& operator=(const CWBEMProperty_ConfigManagerErrorCode& v)
-    {
-        *this = v;
-        return *this;
-    }
-    CWBEMProperty_ConfigManagerErrorCode& operator=(CWBEMProperty_ConfigManagerErrorCode&& v)
-    {
-        *this = v;
-        return *this;
-    }
+    CWBEMProperty_ConfigManagerErrorCode(const CWBEMProperty& property) : CWBEMProperty(property) {}
+    CWBEMProperty_ConfigManagerErrorCode(CWBEMProperty&& property) : CWBEMProperty(property) {}
 
     friend std::wostream& operator<<(std::wostream& os, const CWBEMProperty_ConfigManagerErrorCode& f);
 

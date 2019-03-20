@@ -26,6 +26,8 @@ using namespace std;
 class CWBEMObject
 {
 public:
+    typedef std::pair<int, const CWBEMProperty*> index_property_t;
+
     // Default constructor
     CWBEMObject() {}
 
@@ -41,8 +43,7 @@ public:
     // Move constructor (just transfers the vector)
     CWBEMObject(CWBEMObject&& other)
     {
-        _properties = other._properties;
-        other._properties.clear();
+        this->swap(other);
     }
 
     // Destructor, deletes all objects in the vector
@@ -69,17 +70,22 @@ public:
     // Move assignment (just transfers the vector)
     CWBEMObject& operator=(CWBEMObject&& other)
     {
-        _properties = other._properties;
-        other._properties.clear();
+        this->swap(other);
         return *this;
     }
 
     // Public swap function for use in move operations
     friend void swap(CWBEMObject& first, CWBEMObject& second)
     {
+        first.swap(second);
+    }
+
+    void swap(CWBEMObject &other)
+    {
         using std::swap;
 
-        swap(first, second);
+        swap(_properties, other._properties);
+        swap(_propertyCount, other._propertyCount);
     }
 
     // Method that gets the properties from the service and places them in the _properties array
@@ -87,7 +93,8 @@ public:
 
     // Methods to access the properties
     const std::vector<CWBEMProperty* >& Properties() const { return _properties; }
-    const CVariant Property(int prop) const { return (*Properties().at(prop)); }
+    std::vector<index_property_t> Properties(enum VARENUM type) const;
+    const CWBEMProperty Property(int prop) const { return (*Properties().at(prop)); }
 
     // Methdos to access details about the properties
     virtual const char* PropertyName(int prop) = 0;

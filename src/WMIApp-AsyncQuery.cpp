@@ -7,6 +7,10 @@
 #include "CWin32Processor.h"
 #include "CWin32BIOS.h"
 #include "CWin32OperatingSystem.h"
+#include "CWin32Desktop.h"
+#include "CWin32SerialPort.h"
+#include "CWin32USBController.h"
+#include "CWin32USBControllerDevice.h"
 #include "CWin32Printer.h"
 #include "CWin32PrinterConfiguration.h"
 #include "CWin32PrinterDriver.h"
@@ -14,6 +18,13 @@
 #include "CWin32Process.h"
 #include "CWin32SoftwareLicensingProduct.h"
 #include "CWin32PnpEntity.h"
+#include "CWin32ClassicCOMApplicationClasses.h"
+#include "CWin32ClassicCOMClass.h"
+#include "CWin32DCOMApplication.h"
+#include "CWin32COMApplicationClasses.h"
+#include "CWin32COMApplication.h"
+#include "CWin32COMClass.h"
+#include "CWin32Product.h"
 #include "CCIMComputerSystem.h"
 #include "CCom.h"
 #include "CWBEM.h"
@@ -31,6 +42,38 @@
 #ifndef __MINGW_GCC_VERSION
 #pragma comment(lib, "psapi.lib")
 #endif
+
+// Must be placed after precompiled header
+//#define configLIST_PROCESSES
+//#define configLIST_SOFTWARE_LICENSES
+//#define configLIST_USB
+//#define configLIST_PRINTER
+//#define configLIST_COM
+//#define configLIST_PNP_DEVICES
+//#define configLIST_PRODUCTS
+
+template <typename T>
+void DumpTextualProperties(T t)
+{
+    std::vector<CWBEMObject::index_property_t> textual = t->Properties(VT_BSTR);
+    std::wcout << L"Textual properties = " << textual.size() << std::endl;
+    for (auto txt : textual)
+    {
+        std::wcout << txt.first << L" - " << t->PropertyName(txt.first) << L"=" << *txt.second << std::endl;
+    }
+}
+
+template <typename T>
+void DumpAllProperties(T t)
+{
+    std::wcout << L"All properties = " << t->Properties().size() << std::endl;
+    for (auto &prop : t->Properties())
+    {
+        int i = static_cast<int>(&prop - &t->Properties()[0]);
+        std::wcout << i << L" " << t->PropertyName(i) << L"=" << *prop << std::endl;
+    }
+}
+
 
 #ifdef _DEBUG
 //.................................................................................................................................
@@ -126,9 +169,15 @@ void ListWBEMObjects()
             std::wcout << L"\t" << p->Availability() << L"," << p->CpuStatus() << L"," << p->Voltage() << L"," << p->Frequency() << std::endl;
             std::wcout << L"\t" << p->Status() << L"," << p->ConfigManagerErrorCode() << std::endl;
 
-            CWBEMProperty avail = p->Availability();
-            CWBEMProperty avail2 = avail;
-            std::wcout << avail2 << std::endl;
+            DumpAllProperties(p);
+
+            //std::wcout << L"All properties = " << p->Properties().size() << std::endl;
+            //for (auto &prop : p->Properties())
+            //{
+            //    int i = static_cast<int>(&prop - &p->Properties()[0]);
+            //    std::wcout << i << L" " << p->PropertyName(i) << L"=" << *prop << std::endl;
+            //}
+
         }
     }
 
@@ -141,6 +190,8 @@ void ListWBEMObjects()
         for (auto &b : bios.Objects())
         {
             std::wcout << &b - &bios.Objects()[0] << L" " << b->Description() << std::endl;
+
+            DumpAllProperties(b);
         }
     }
 
@@ -153,9 +204,66 @@ void ListWBEMObjects()
         for (auto &o : os.Objects())
         {
             std::wcout << &o - &os.Objects()[0] << L" " << o->Caption() << std::endl;
+
+            DumpAllProperties(o);
         }
     }
 
+    //.............................................................................................................................
+    // Desktop
+    //
+    TWBEMObjects<CWin32DesktopObject> desk;
+    if (WMIQuery<CWin32DesktopObject>(wbem.Service(), desk.Objects(), CWin32DesktopObject::ObjectName))
+    {
+        for (auto &o : desk.Objects())
+        {
+            std::wcout << &o - &desk.Objects()[0] << L" " << o->Name() << std::endl;
+
+            DumpAllProperties(o);
+        }
+    }
+
+    //.............................................................................................................................
+    // Serial Ports
+    //
+    TWBEMObjects<CWin32SerialPortObject> ports;
+    if (WMIQuery<CWin32SerialPortObject>(wbem.Service(), ports.Objects(), CWin32SerialPortObject::ObjectName))
+    {
+        for (auto &p : ports.Objects())
+        {
+            std::wcout << &p - &ports.Objects()[0] << L" " << p->Caption() << std::endl;
+
+            DumpAllProperties(p);
+        }
+    }
+
+#ifdef configLIST_USB
+    //.............................................................................................................................
+    // USB Controller Device
+    //
+    TWBEMObjects<CWin32USBControllerDeviceObject> usbdev;
+    if (WMIQuery<CWin32USBControllerDeviceObject>(wbem.Service(), usbdev.Objects(), CWin32USBControllerDeviceObject::ObjectName))
+    {
+        for (auto &u : usbdev.Objects())
+        {
+            std::wcout << &u - &usbdev.Objects()[0] << L" " << u->Antecedent() << L"," << u->Dependent() << std::endl;
+        }
+    }
+
+    //.............................................................................................................................
+    // USB Controller
+    //
+    TWBEMObjects<CWin32USBControllerObject> usb;
+    if (WMIQuery<CWin32USBControllerObject>(wbem.Service(), usb.Objects(), CWin32USBControllerObject::ObjectName))
+    {
+        for (auto &u : usb.Objects())
+        {
+            std::wcout << &u - &usb.Objects()[0] << L" " << u->Caption() << L"," << u->Description() << L"," << u->DeviceID() << L"," << u->Name() << L"," << u->PNPDeviceID() << std::dec << std::endl;
+        }
+    }
+#endif
+
+#ifdef configLIST_PRINTER
     //.............................................................................................................................
     // Printers
     //
@@ -203,8 +311,9 @@ void ListWBEMObjects()
             std::wcout << &p - &printJobs.Objects()[0] << L" " << p->Description() << std::endl;
         }
     }
+#endif
 
-#if 1
+#ifdef configLIST_PROCESSES
     //.............................................................................................................................
     // Processes
     //
@@ -218,7 +327,83 @@ void ListWBEMObjects()
     }
 #endif
 
-#if 1
+#ifdef configLIST_COM
+    //.............................................................................................................................
+    // Classic COM Application Classes
+    //
+    TWBEMObjects<CWin32ClassicCOMApplicationClassesObject> classiccomappclasses;
+    if (WMIQuery<CWin32ClassicCOMApplicationClassesObject>(wbem.Service(), classiccomappclasses.Objects(), CWin32ClassicCOMApplicationClassesObject::ObjectName))
+    {
+        for (auto& c : classiccomappclasses.Objects())
+        {
+            std::wcout << &c - &classiccomappclasses.Objects()[0] << L" " << c->PartComponentGUID() << L"," << c->GroupComponentGUID() << std::endl;
+        }
+    }
+
+    //.............................................................................................................................
+    // Classic COM Classes
+    //
+    TWBEMObjects<CWin32ClassicCOMClassObject> classiccomclass;
+    if (WMIQuery<CWin32ClassicCOMClassObject>(wbem.Service(), classiccomclass.Objects(), CWin32ClassicCOMClassObject::ObjectName))
+    {
+        for (auto& c : classiccomclass.Objects())
+        {
+            std::wcout << &c - &classiccomclass.Objects()[0] << L" " << c->Name() << L"," << c->ComponentID() << std::endl;
+        }
+    }
+
+    //.............................................................................................................................
+    // DCOM Application
+    //
+    TWBEMObjects<CWin32DCOMApplicationObject> dcomapp;
+    if (WMIQuery<CWin32DCOMApplicationObject>(wbem.Service(), dcomapp.Objects(), CWin32DCOMApplicationObject::ObjectName))
+    {
+        for (auto &c : dcomapp.Objects())
+        {
+            std::wcout << &c - &dcomapp.Objects()[0] << L" " << c->Name() << L"," << c->AppID() << std::endl;
+        }
+    }
+#endif
+
+#if 0
+    //.............................................................................................................................
+    // COM Application Classes
+    //
+    TWBEMObjects<CWin32COMApplicationClassesObject> comclasses;
+    if (WMIQuery<CWin32COMApplicationClassesObject>(wbem.Service(), comclasses.Objects(), CWin32COMApplicationClassesObject::ObjectName))
+    {
+        for (auto &c : comclasses.Objects())
+        {
+            std::wcout << &c - &comclasses.Objects()[0] << L" " << c->PartComponent() << std::endl;
+        }
+    }
+
+    //.............................................................................................................................
+    // COM Applications
+    //
+    TWBEMObjects<CWin32COMApplicationObject> comobj;
+    if (WMIQuery<CWin32COMApplicationObject>(wbem.Service(), comobj.Objects(), CWin32COMApplicationObject::ObjectName))
+    {
+        for (auto &c : comobj.Objects())
+        {
+            std::wcout << &c - &comobj.Objects()[0] << L" " << c->Name() << std::endl;
+        }
+    }
+
+    //.............................................................................................................................
+    // COM Application Classes
+    //
+    TWBEMObjects<CWin32COMClassObject> comclass;
+    if (WMIQuery<CWin32COMClassObject>(wbem.Service(), comclass.Objects(), CWin32COMClassObject::ObjectName))
+    {
+        for (auto &c : comclass.Objects())
+        {
+            std::wcout << &c - &comclass.Objects()[0] << L" " << c->Name() << std::endl;
+        }
+    }
+#endif
+
+#ifdef configLIST_SOFTWARE_LICENSES
     //.............................................................................................................................
     // Software Licensing Product
     //
@@ -250,14 +435,37 @@ void ListWBEMObjects()
                 c->NameFormat() << L"," <<
                 c->PrimaryOwnerContact() << L"," <<
                 c->PrimaryOwnerName() << std::endl;
-            for (auto &r : c->Roles())
+            std::vector<std::wstring> roles = c->Roles();
+            for (std::vector<std::wstring>::iterator r = roles.begin(); r != roles.end(); ++r)
             {
-                std::wcout << r << std::endl;
+                if (r == roles.begin())
+                {
+                    std::wcout << L"Roles:\t";
+                }
+                else
+                {
+                    std::wcout << L"\t";
+                }
+                std::wcout << *r << std::endl;
             }
         }
     }
 
-#if 1
+#ifdef configLIST_PRODUCTS
+    //.............................................................................................................................
+    // Products
+    //
+    TWBEMObjects<CWin32ProductObject> prodobj;
+    if (WMIQuery<CWin32ProductObject>(wbem.Service(), prodobj.Objects(), CWin32ProductObject::ObjectName))
+    {
+        for (auto &p : prodobj.Objects())
+        {
+            std::wcout << &p - &prodobj.Objects()[0] << L" " << p->Description() << std::endl;
+        }
+    }
+#endif
+
+#ifdef configLIST_PNP_DEVICES
     //.............................................................................................................................
     // Pnp Devices
     //
@@ -266,6 +474,10 @@ void ListWBEMObjects()
     {
         for (auto &d : devices.Objects())
         {
+            if (!d->Present())
+            {
+                continue;
+            }
             std::wcout << &d - &devices.Objects()[0] << L" ";
             if (d->Description().empty() && d->Caption().empty())
             {
@@ -303,7 +515,8 @@ void ListWBEMObjects()
 
 #ifdef _DEBUG
     //PrintMemoryInfo(_getpid());
-    std::wcout << L"HEAPCHK=" << _heapchk() << std::endl;
+    _RPT1(_CRT_WARN, "HEAPCHK=%d", _heapchk());
+    //std::wcout << L"HEAPCHK=" << _heapchk() << std::endl;
 #endif
 }
 
@@ -332,7 +545,8 @@ int main(int argc, char **argv)
     _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_DEBUG);
 
     //PrintMemoryInfo(_getpid());
-    std::wcout << L"HEAPCHK=" << _heapchk() << std::endl;
+    _RPT1(_CRT_WARN, "HEAPCHK=%d", _heapchk());
+    //std::wcout << L"HEAPCHK=" << _heapchk() << std::endl;
     _CrtMemState s1;
     _CrtMemCheckpoint(&s1);
     _CrtMemDumpStatistics(&s1);

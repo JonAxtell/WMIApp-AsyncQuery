@@ -13,6 +13,42 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="CWBEM">
+      <UniqueIdentifier>{55c2a452-fad0-4501-b393-42b5bf704ee6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CWBEM\Header Files">
+      <UniqueIdentifier>{ca7ecfb3-6659-4cbd-a8d6-1884e985ea1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CWBEM\Source Files">
+      <UniqueIdentifier>{a96fe02a-58be-4f0b-b875-cb28971750db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Win32 Hardware Classes">
+      <UniqueIdentifier>{35f0fed1-da0e-4644-bd24-fc10a9638b2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Win32 Hardware Classes\Header Files">
+      <UniqueIdentifier>{f4491955-5551-40c9-9c83-1357efeea2d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Win32 Hardware Classes\Source Files">
+      <UniqueIdentifier>{d476286b-a272-4b58-96b7-9499605cb0ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Win32 OS Classes">
+      <UniqueIdentifier>{0bf854dc-ef0c-434e-b0cd-619d0627a1ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Win32 OS Classes\Header Files">
+      <UniqueIdentifier>{37b30a60-1319-4356-a2e4-7e4c5cdbc829}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Win32 OS Classes\Source Files">
+      <UniqueIdentifier>{3eacdfa2-2934-4db7-83f3-7e7f27f80cb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Win32 Installer Classes">
+      <UniqueIdentifier>{a85c9ecf-cf0a-4ae9-b096-a0bfe03d0086}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Win32 Installer Classes\Header Files">
+      <UniqueIdentifier>{98bf3ba6-7765-44f5-901b-f58a17a450bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Win32 Installer Classes\Source Files">
+      <UniqueIdentifier>{e31c9727-76f0-4560-b9ba-4f679d7ac7ac}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -22,39 +58,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CVariant.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CWBEMObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CWin32Printer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CWin32OperatingSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CWin32BIOS.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CWin32Processor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CWBEMObjectSink.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CWBEMObjectQuery.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CWin32Process.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CWin32PrinterConfiguration.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CWin32PrinterDriver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CWin32PrintJob.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CWin32SoftwareLicensingProduct.h">
@@ -72,20 +75,86 @@
     <ClInclude Include="CCom.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CWBEM.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="WMIQuery.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CWin32PnpEntity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TWBEMObjects.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CWBEM.h">
+      <Filter>CWBEM\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CWBEMObject.h">
+      <Filter>CWBEM\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CWBEMObjectQuery.h">
+      <Filter>CWBEM\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CWBEMObjectSink.h">
+      <Filter>CWBEM\Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="CWBEMProperty.h">
-      <Filter>Header Files</Filter>
+      <Filter>CWBEM\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CWin32BIOS.h">
+      <Filter>Win32 Hardware Classes\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CWin32PnpEntity.h">
+      <Filter>Win32 Hardware Classes\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CWin32Printer.h">
+      <Filter>Win32 Hardware Classes\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CWin32PrinterConfiguration.h">
+      <Filter>Win32 Hardware Classes\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CWin32PrinterDriver.h">
+      <Filter>Win32 Hardware Classes\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CWin32PrintJob.h">
+      <Filter>Win32 Hardware Classes\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CWin32Processor.h">
+      <Filter>Win32 Hardware Classes\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CWin32SerialPort.h">
+      <Filter>Win32 Hardware Classes\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CWin32USBController.h">
+      <Filter>Win32 Hardware Classes\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CWin32USBControllerDevice.h">
+      <Filter>Win32 Hardware Classes\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CWin32ClassicCOMApplicationClasses.h">
+      <Filter>Win32 OS Classes\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CWin32ClassicCOMClass.h">
+      <Filter>Win32 OS Classes\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CWin32COMApplication.h">
+      <Filter>Win32 OS Classes\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CWin32COMApplicationClasses.h">
+      <Filter>Win32 OS Classes\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CWin32COMClass.h">
+      <Filter>Win32 OS Classes\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CWin32DCOMApplication.h">
+      <Filter>Win32 OS Classes\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CWin32OperatingSystem.h">
+      <Filter>Win32 OS Classes\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CWin32Desktop.h">
+      <Filter>Win32 OS Classes\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CWin32Process.h">
+      <Filter>Win32 OS Classes\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CWin32Product.h">
+      <Filter>Win32 Installer Classes\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -98,56 +167,89 @@
     <ClCompile Include="CVariant.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CWBEMObjectSink.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CWBEMObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CWin32BIOS.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CWin32OperatingSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CWin32Printer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CWin32Processor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CWBEMObjectQuery.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CWin32Process.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CWin32PrinterConfiguration.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CWin32PrinterDriver.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CWin32PrintJob.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CWin32SoftwareLicensingProduct.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CCIMComputerSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CWBEM.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CCom.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CWin32PnpEntity.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="CWBEM.cpp">
+      <Filter>CWBEM\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CWBEMObject.cpp">
+      <Filter>CWBEM\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CWBEMObjectQuery.cpp">
+      <Filter>CWBEM\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CWBEMObjectSink.cpp">
+      <Filter>CWBEM\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CWBEMProperty.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>CWBEM\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CWin32BIOS.cpp">
+      <Filter>Win32 Hardware Classes\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CWin32PnpEntity.cpp">
+      <Filter>Win32 Hardware Classes\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CWin32Printer.cpp">
+      <Filter>Win32 Hardware Classes\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CWin32PrinterConfiguration.cpp">
+      <Filter>Win32 Hardware Classes\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CWin32PrinterDriver.cpp">
+      <Filter>Win32 Hardware Classes\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CWin32PrintJob.cpp">
+      <Filter>Win32 Hardware Classes\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CWin32Processor.cpp">
+      <Filter>Win32 Hardware Classes\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CWin32SerialPort.cpp">
+      <Filter>Win32 Hardware Classes\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CWin32USBControllerDevice.cpp">
+      <Filter>Win32 Hardware Classes\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CWin32USBController.cpp">
+      <Filter>Win32 Hardware Classes\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CWin32ClassicCOMApplicationClasses.cpp">
+      <Filter>Win32 OS Classes\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CWin32ClassicCOMClass.cpp">
+      <Filter>Win32 OS Classes\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CWin32COMApplication.cpp">
+      <Filter>Win32 OS Classes\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CWin32COMApplicationClasses.cpp">
+      <Filter>Win32 OS Classes\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CWin32COMClass.cpp">
+      <Filter>Win32 OS Classes\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CWin32DCOMApplication.cpp">
+      <Filter>Win32 OS Classes\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CWin32Desktop.cpp">
+      <Filter>Win32 OS Classes\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CWin32OperatingSystem.cpp">
+      <Filter>Win32 OS Classes\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CWin32Process.cpp">
+      <Filter>Win32 OS Classes\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CWin32Product.cpp">
+      <Filter>Win32 Installer Classes\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

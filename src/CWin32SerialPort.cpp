@@ -1,0 +1,57 @@
+#include "pch.h"
+#include "CWin32SerialPort.h"
+
+const char* CWin32SerialPortObject::ObjectName = "Win32_SerialPort";
+
+const char* CWin32SerialPortObject::propertyNames[] =
+{
+    "Availability",
+    "Binary",
+    "Capabilities",
+    "CapabilityDescriptions",
+    "Caption",
+    "ConfigManagerErrorCode",
+    "ConfigManagerUserConfig",
+    "CreationClassName",
+    "Description",
+    "DeviceID",
+    "ErrorCleared",
+    "ErrorDescription",
+    "InstallDate",
+    "LastErrorCode",
+    "MaxBaudRate",
+    "MaximumInputBufferSize",
+    "MaximumOutputBufferSize",
+    "MaxNumberControlled",
+    "Name",
+    "OSAutoDiscovered",
+    "PNPDeviceID",
+    "PowerManagementCapabilities",
+    "PowerManagementSupported",
+    "ProtocolSupported",
+    "ProviderType",
+    "SettableBaudRate",
+    "SettableDataBits",
+    "SettableFlowControl",
+    "SettableParity",
+    "SettableParityCheck",
+    "SettableRLSD",
+    "SettableStopBits",
+    "Status",
+    "StatusInfo",
+    "Supports16BitMode",
+    "SupportsDTRDSR",
+    "SupportsElapsedTimeouts",
+    "SupportsIntTimeouts",
+    "SupportsParityCheck",
+    "SupportsRLSD",
+    "SupportsRTSCTS",
+    "SupportsSpecialCharacters",
+    "SupportsXOnXOff",
+    "SupportsXOnXOffSet",
+    "SystemCreationClassName",
+    "SystemName",
+    "TimeOfLastReset",
+    NULL
+};
+
