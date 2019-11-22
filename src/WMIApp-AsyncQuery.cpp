@@ -44,13 +44,13 @@
 #endif
 
 // Must be placed after precompiled header
-//#define configLIST_PROCESSES
-//#define configLIST_SOFTWARE_LICENSES
-//#define configLIST_USB
-//#define configLIST_PRINTER
-//#define configLIST_COM
-//#define configLIST_PNP_DEVICES
-//#define configLIST_PRODUCTS
+#define configLIST_PROCESSES
+#define configLIST_SOFTWARE_LICENSES
+#define configLIST_USB
+#define configLIST_PRINTER
+#define configLIST_COM
+#define configLIST_PNP_DEVICES
+#define configLIST_PRODUCTS
 
 template <typename T>
 void DumpTextualProperties(T t)
